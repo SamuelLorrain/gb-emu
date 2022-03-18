@@ -24,6 +24,8 @@ export class GBRegisters implements RegisterMap {
             'h', 'l'
         ];
         this.sixteenBitsRegisters = [
+            'af', 'bc',
+            'de', 'hl',
             'sp', 'pc'
         ];
         this.regMemory = createMemory(this.heightBitsRegisters.length + (this.sixteenBitsRegisters.length *2));
@@ -36,11 +38,15 @@ export class GBRegisters implements RegisterMap {
             e:  5,
             h:  6,
             l:  7,
-        }
+        };
         this.sixteenBitsRegisterMapping = {
+            af: 0,
+            bc: 2,
+            de: 4,
+            hl: 6,
             sp: 8,
             pc: 10,
-        }
+        };
         this.cycles = 0;
     }
 
