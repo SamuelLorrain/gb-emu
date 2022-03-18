@@ -50,25 +50,25 @@ export class GBRegisters implements RegisterMap {
         this.cycles = 0;
     }
 
-    getRegister(reg: keyof Object): number {
-        let r = this.heightBitsRegisterMapping[reg];
+    getRegister(reg: string): number {
+        let r = this.heightBitsRegisterMapping[reg as keyof Object];
         if (r !== undefined) {
             return this.regMemory.getUint8(r as any);
         }
-        r = this.sixteenBitsRegisterMapping[reg];
+        r = this.sixteenBitsRegisterMapping[reg as keyof Object];
         if (r !== undefined) {
             return this.regMemory.getUint16(r as any);
         }
         throw Error(`getRegister: unkwnown register ${reg}`);
     }
 
-    setRegister(reg: keyof Object, n: number) {
-        let r = this.heightBitsRegisterMapping[reg];
+    setRegister(reg: string, n: number) {
+        let r = this.heightBitsRegisterMapping[reg as keyof Object];
         if (r !== undefined) {
             this.regMemory.setUint8(r as any, n);
             return;
         }
-        r = this.sixteenBitsRegisterMapping[reg];
+        r = this.sixteenBitsRegisterMapping[reg as keyof Object];
         if (r !== undefined) {
             this.regMemory.setUint16(r as any, n);
             return;
@@ -76,4 +76,3 @@ export class GBRegisters implements RegisterMap {
         throw Error(`setRegister: unkwnown register ${reg}`);
     }
 }
-

@@ -35,11 +35,11 @@ export class Cpu {
         }
     }
 
-    setRegister(reg: keyof Object, n: number) {
-        this.registerMap.setRegister(reg, n);
+    setRegister(reg: string, n: number) {
+        this.registerMap.setRegister(reg as keyof Object, n);
     }
-    getRegister(reg: keyof Object): number {
-        return this.registerMap.getRegister(reg);
+    getRegister(reg: string): number {
+        return this.registerMap.getRegister(reg as keyof Object);
     }
     resetFlag() {
         this.registerMap.setRegister('f' as keyof Object, 0);
