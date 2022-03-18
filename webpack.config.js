@@ -1,6 +1,9 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
-module.exports = {
+const nodeConfig = {
+    target: 'node',
     entry: './src/index.ts',
     output: {
         filename: 'bundle.js',
@@ -26,4 +29,27 @@ module.exports = {
     resolve:  {
         extensions: ['.tsx', '.ts', '.js']
     },
-}
+    plugins: [
+        new webpack.EnvironmentPlugin({
+            WEB: false,
+        })
+    ]
+};
+
+const webConfig = structuredClone(nodeConfig);
+webConfig.target = 'web';
+webConfig.output = {
+    filename: 'bundle.web.js',
+    path: path.resolve(__dirname, 'dist')
+};
+webConfig.plugins = [
+    new HtmlWebpackPlugin({
+        title: 'GB emu',
+        template: './template.ejs'
+    }),
+    new webpack.EnvironmentPlugin({
+        WEB: true,
+    })
+]
+
+module.exports = [nodeConfig, webConfig];
