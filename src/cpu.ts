@@ -1,6 +1,5 @@
 import { RegisterMap } from './registers';
-import { alias } from './instructionAlias';
-import * as instructions from './instructions';
+import * as DebugScreen from './replaced_modules/debugScreen.module_replaced';
 
 export class Cpu {
     memory: DataView;
@@ -14,25 +13,15 @@ export class Cpu {
     }
 
     debugReg() {
-        for(const reg in this.registerMap.heightBitsRegisterMapping) {
-            const value = this.registerMap.getRegister(reg as keyof Object);
-            console.log(
-                `${reg} : 0x${value}`
-            );
-        }
-        for(const reg in this.registerMap.sixteenBitsRegisterMapping) {
-            const value = this.registerMap.getRegister(reg as keyof Object);
-            console.log(
-                `${reg} : 0x${value}`
-            );
-        }
+        DebugScreen.debugReg(this);
+    }
+
+    debugFlags() {
+        DebugScreen.debugFlags(this);
     }
 
     debugMemory(addr: number, distance:number = 1) {
-        for(let i = 0; i < distance; i++) {
-            const currentAddr = i + addr
-            console.log(`0x${currentAddr.toString(16)} : 0x${this.memory.getUint8(currentAddr).toString(16)}`);
-        }
+        DebugScreen.debugMemory(this, addr, distance);
     }
 
     setRegister(reg: string, n: number) {
@@ -55,6 +44,11 @@ export class Cpu {
         this.setRegister('f' as keyof Object, flagRegister);
     }
 
+    getZFlag() {
+        const flagRegister = this.getRegister('f' as keyof Object);
+        return (flagRegister & 0b10000000) >> 7;
+    }
+
     setNFlag(v: 0|1) {
         let flagRegister = this.getRegister('f' as keyof Object);
         if (v == 1) {
@@ -65,6 +59,11 @@ export class Cpu {
         this.setRegister('f' as keyof Object, flagRegister);
     }
 
+    getNFlag() {
+        const flagRegister = this.getRegister('f' as keyof Object);
+        return (flagRegister & 0b01000000) >> 6;
+    }
+
     setHFlag(v: 0|1) {
         let flagRegister = this.getRegister('f' as keyof Object);
         if (v == 1) {
@@ -73,6 +72,11 @@ export class Cpu {
             flagRegister &= 0b11011111;
         }
         this.setRegister('f' as keyof Object, flagRegister);
+    }
+
+    getHFlag() {
+        const flagRegister = this.getRegister('f' as keyof Object);
+        return (flagRegister & 0b00100000) >> 5;
     }
 
     setCFlag(v: 0|1) {

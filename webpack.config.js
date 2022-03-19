@@ -32,7 +32,11 @@ const nodeConfig = {
     plugins: [
         new webpack.EnvironmentPlugin({
             WEB: false,
-        })
+        }),
+        new webpack.NormalModuleReplacementPlugin(
+            /.*debugScreen.module_replaced$/,
+            './view/debugScreenNode.ts'
+        )
     ]
 };
 
@@ -49,7 +53,11 @@ webConfig.plugins = [
     }),
     new webpack.EnvironmentPlugin({
         WEB: true,
-    })
+    }),
+    new webpack.NormalModuleReplacementPlugin(
+        /.*debugScreen.module_replaced$/,
+        './view/debugScreenWeb.ts'
+    )
 ]
 
 module.exports = [nodeConfig, webConfig];
