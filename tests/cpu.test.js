@@ -11,6 +11,39 @@ const makeGB = (memory) => {
     return cpu;
 }
 
+test('Can set 16 bits registers', function () {
+    const ram = makeRam();
+    const gb = makeGB(ram);
+    expect(gb.getRegister('af')).toBe(0);
+    expect(gb.getRegister('bc')).toBe(0);
+    expect(gb.getRegister('de')).toBe(0);
+    expect(gb.getRegister('hl')).toBe(0);
+    expect(gb.getRegister('sp')).toBe(0);
+    expect(gb.getRegister('pc')).toBe(0);
+
+    gb.setRegister('af', 0xABCD);
+    gb.setRegister('bc', 0xABCD);
+    gb.setRegister('de', 0xABCD);
+    gb.setRegister('hl', 0xABCD);
+    gb.setRegister('sp', 0xABCD);
+    gb.setRegister('pc', 0xABCD);
+
+    expect(gb.getRegister('af')).toBe(0xABCD);
+    expect(gb.getRegister('bc')).toBe(0xABCD);
+    expect(gb.getRegister('de')).toBe(0xABCD);
+    expect(gb.getRegister('hl')).toBe(0xABCD);
+    expect(gb.getRegister('sp')).toBe(0xABCD);
+    expect(gb.getRegister('pc')).toBe(0xABCD);
+    expect(gb.getRegister('a')).toBe(0xAB);
+    expect(gb.getRegister('f')).toBe(0xCD);
+    expect(gb.getRegister('b')).toBe(0xAB);
+    expect(gb.getRegister('c')).toBe(0xCD);
+    expect(gb.getRegister('d')).toBe(0xAB);
+    expect(gb.getRegister('e')).toBe(0xCD);
+    expect(gb.getRegister('h')).toBe(0xAB);
+    expect(gb.getRegister('l')).toBe(0xCD);
+});
+
 test('GB is successfully initiated', function() {
     const ram = makeRam();
     const gb = makeGB(ram);
@@ -22,6 +55,10 @@ test('GB is successfully initiated', function() {
     expect(gb.getRegister('e')).toBe(0);
     expect(gb.getRegister('h')).toBe(0);
     expect(gb.getRegister('l')).toBe(0);
+    expect(gb.getRegister('af')).toBe(0);
+    expect(gb.getRegister('bc')).toBe(0);
+    expect(gb.getRegister('de')).toBe(0);
+    expect(gb.getRegister('hl')).toBe(0);
     expect(gb.getRegister('sp')).toBe(0);
     expect(gb.getRegister('pc')).toBe(0);
 });

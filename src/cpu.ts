@@ -1,13 +1,16 @@
 import { RegisterMap } from './registers';
 import * as DebugScreen from './replaced_modules/debugScreen.module_replaced';
+import { MemoryMapper } from './memorymapper';
+import { alias } from './instructionAlias';
+import * as instructions from './instructions';
 
 export class Cpu {
-    memory: DataView;
+    mmapper: MemoryMapper;
     registerMap: RegisterMap;
     instructionPointer: keyof Object; // should be a key of registerMap ?
 
-    constructor(memory: DataView, registerMap: RegisterMap) {
-        this.memory = memory;
+    constructor(mmapper: MemoryMapper, registerMap: RegisterMap) {
+        this.mmapper = mmapper;
         this.registerMap = registerMap;
         this.instructionPointer = 'pc' as keyof Object;
     }
@@ -96,11 +99,23 @@ export class Cpu {
 
     fetchNext(): number {
         const pcValue = this.registerMap.getRegister('pc' as keyof Object);
-        const instruction = this.memory.getUint8(pcValue);
+        const instruction = this.mmapper.getUint8(pcValue);
         this.registerMap.setRegister('pc' as keyof Object, pcValue + 1);
         return instruction;
     }
 
     executeNext() {
+        const instruction = this.fetchNext();
+        switch(instruction) {
+            case alias.LD_HL_D16:
+                instructions.ld_r16_nn(this, 'hl');
+                break;
+            case alias.LD_A_D8:
+                instructions.ld_r8_n(this, 'a');
+                break;
+            case alias.LD_A_REF_HL:
+                instructions.ld_r8_ref_hl(this, 'a');
+                break;
+        }
     }
 }

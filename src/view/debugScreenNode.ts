@@ -22,7 +22,7 @@ export const debugMemory = (cpu: Cpu, addr: number, distance:number = 1) => {
     }
     for(let i = beginDistance; i < distance; i++) {
         const currentAddr = i + addr
-        console.log(`0x${currentAddr.toString(16)} : 0x${cpu.memory.getUint8(currentAddr).toString(16)}`);
+        console.log(`0x${currentAddr.toString(16)} : 0x${cpu.mmapper.getUint8(currentAddr).toString(16)}`);
     }
 }
 

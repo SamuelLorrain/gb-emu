@@ -12,13 +12,20 @@ import { Cpu } from './cpu';
 * nn == immediat 16bits value
 */
 
-export const ld_n_r8 = function(cpu: Cpu, reg: string) {
+export const ld_r8_n = function(cpu: Cpu, reg: string) {
     const v = cpu.fetchNext();
     cpu.setRegister(reg, v);
 }
 
 export const ld_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
     cpu.setRegister(r1, cpu.getRegister(r2));
+}
+
+export const ld_r16_nn = function(cpu: Cpu, reg: string) {
+    const v1 = cpu.fetchNext();
+    const v2 = cpu.fetchNext();
+    console.log(v1.toString(16) + " ::: " + v2.toString(16));
+    cpu.setRegister(reg, (v1 << 8) +v2);
 }
 
 export const inc_r8 = function(cpu: Cpu, reg: string) {
@@ -129,12 +136,12 @@ export const xor_A_r8 = function(cpu: Cpu, r1: string) {
 export const ld_ref_hl_r8 = function(cpu: Cpu, reg: string) {
     const addr = cpu.getRegister('h') << 8 + cpu.getRegister('l');
     const value = cpu.getRegister(reg);
-    cpu.memory.setUint8(addr, value);
+    cpu.mmapper.setUint8(addr, value);
 }
 
 export const ld_r8_ref_hl = function(cpu: Cpu, reg: string) {
-    const addr = cpu.getRegister('h') << 8 + cpu.getRegister('l');
-    const value = cpu.memory.getUint8(addr);
+    const addr = cpu.getRegister('hl');
+    const value = cpu.mmapper.getUint8(addr);
     cpu.setRegister(reg, value);
 }
 
