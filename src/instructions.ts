@@ -41,7 +41,7 @@ export const inc_r8 = function(cpu: Cpu, reg: string) {
     if ((((v & 0xf) + (newV & 0xf)) & 0x10) === 0x10) {
         cpu.setHFlag(1);
     }
-    cpu.setRegister(reg,newV);
+    cpu.setRegister(reg, newV);
 }
 
 export const inc_r16 = function(cpu: Cpu, reg: string) {
@@ -82,7 +82,7 @@ export const dec_r8 = function(cpu: Cpu, reg: string) {
     if ((newV & 0xf) === 0) {
         cpu.setHFlag(1);
     }
-    cpu.setRegister(reg,newV);
+    cpu.setRegister(reg, newV);
 }
 
 export const add_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
@@ -157,6 +157,12 @@ export const ld_ref_r16_r8 = function(cpu: Cpu, r16: string, r8: string) {
     cpu.mmapper.setUint8(addr, value);
 }
 
+export const ld_ref_r16_d8 = function(cpu: Cpu, r16: string) {
+    const addr = cpu.getRegister(r16);
+    const value = cpu.fetchNext();
+    cpu.mmapper.setUint8(addr, value);
+}
+
 export const ld_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
     const addr = cpu.getRegister(r16);
     const value = cpu.mmapper.getUint8(addr);
@@ -170,7 +176,7 @@ export const rlca = function(cpu: Cpu) {
     if (result === 0) {
         cpu.setZFlag(1);
     }
-    cpu.setCFlag(((a >> 7) & 0b1) as 0|1);
+    cpu.setCFlag(((a >> 7) & 0b1) as 0 | 1);
     cpu.setRegister('a', result);
 }
 
@@ -182,7 +188,7 @@ export const rla = function(cpu: Cpu) {
     if (result === 0) {
         cpu.setZFlag(1);
     }
-    cpu.setCFlag(((a >> 7) & 0b1) as 0|1);
+    cpu.setCFlag(((a >> 7) & 0b1) as 0 | 1);
     cpu.setRegister('a', result);
 }
 
@@ -193,18 +199,18 @@ export const rrca = function(cpu: Cpu) {
     if (result === 0) {
         cpu.setZFlag(1);
     }
-    cpu.setCFlag((a & 0b00000001) as 0|1);
+    cpu.setCFlag((a & 0b00000001) as 0 | 1);
     cpu.setRegister('a', result);
 }
 
 export const rra = function(cpu: Cpu) {
     const a = cpu.getRegister('a');
     cpu.resetFlag();
-    const result = (a >> 1) & (cpu.getCFlag() << 7) ;
+    const result = (a >> 1) & (cpu.getCFlag() << 7);
     if (result === 0) {
         cpu.setZFlag(1);
     }
-    cpu.setCFlag((a & 0b00000001) as 0|1);
+    cpu.setCFlag((a & 0b00000001) as 0 | 1);
     cpu.setRegister('a', result);
 }
 
@@ -322,19 +328,109 @@ export const daa = function(cpu: Cpu) {
         cpu.setZFlag(1);
     }
     cpu.setHFlag(0);
-    cpu.setCFlag(carry as 0|1);
+    cpu.setCFlag(carry as 0 | 1);
 }
 
-export const ld_ref_hl_plus_a = function(cpu: Cpu) { }
-export const ld_ref_hl_minus_a = function(cpu: Cpu) { }
-export const inc_ref_r16 = function(cpu: Cpu) { }
-export const dec_ref_r16 = function(cpu: Cpu) { }
-export const scf = function(cpu: Cpu) { }
-export const jr_c_r8 = function(cpu: Cpu) {}
-export const ld_a_ref_hl_plus = function(cpu: Cpu) {}
-export const ld_a_ref_hl_minus = function(cpu: Cpu) {}
-export const cpl = function(cpu: Cpu) {}
-export const ccf = function(cpu: Cpu) {}
-export const sub_r8_r8 = function(cpu: Cpu) {}
-export const sbc_r8_r8 = function(cpu: Cpu) {}
+export const ld_ref_r16_plus_r8 = function(cpu: Cpu, r16:string, r8:string) {
+    let addr = cpu.getRegister(r16);
+    const value = cpu.getRegister(r8);
+    cpu.mmapper.setUint8(addr, value);
+
+    if (addr+1 > 0x10000) {
+        addr = 0;
+    } else {
+        addr +=1
+    }
+    cpu.setRegister(r16, addr);
+}
+
+export const ld_ref_r16_minus_r8 = function(cpu: Cpu, r16:string, r8:string) {
+    let addr = cpu.getRegister(r16);
+    const value = cpu.getRegister(r8);
+    cpu.mmapper.setUint8(addr, value);
+
+    if (addr-1 < 0) {
+        addr = 0xFFFF;
+    } else {
+        addr -=1
+    }
+    cpu.setRegister(r16, addr);
+}
+
+export const cpl = function(cpu: Cpu, r8: string) {
+    cpu.setRegister(r8, ~cpu.getRegister(r8));
+    cpu.setNFlag(1);
+    cpu.setHFlag(1);
+}
+
+export const jr_nc_r8 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 1) {
+        cpu.fetchNext();
+        return;
+    }
+    let addr = cpu.getRegister('pc');
+    addr += cpu.fetchNext();
+    cpu.setRegister('pc', addr);
+}
+
+export const jr_c_r8 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 0) {
+        cpu.fetchNext();
+        return;
+    }
+    let addr = cpu.getRegister('pc');
+    addr += cpu.fetchNext();
+    cpu.setRegister('pc', addr);
+}
+
+export const inc_ref_r16 = function(cpu: Cpu, r16: string) {
+    const addr = cpu.getRegister(r16);
+    let v = cpu.mmapper.getUint8(addr);
+    if (v+1 == 0x100) {
+        v = 0x0;
+    } else {
+        v += 1;
+    }
+    cpu.mmapper.setUint8(addr, v);
+}
+
+export const dec_ref_r16 = function(cpu: Cpu, r16: string) {
+    const addr = cpu.getRegister(r16);
+    let v = cpu.mmapper.getUint8(addr);
+    if (v === 0) {
+        v = 0xFF;
+    } else {
+        v -= 1;
+    }
+    cpu.mmapper.setUint8(addr, v);
+}
+
+export const ld_r8_ref_r16_minus = function(cpu:Cpu, r8:string, r16:string) {
+    const addr = cpu.getRegister(r16);
+    let v = cpu.mmapper.getUint8(addr);
+    cpu.setRegister(r8, v);
+    if (v === 0) {
+        v = 0xFF;
+    } else {
+        v -= 1;
+    }
+    cpu.mmapper.setUint8(addr, v);
+}
+
+export const ld_r8_ref_r16_plus = function(cpu:Cpu, r8:string, r16:string) {
+    const addr = cpu.getRegister(r16);
+    let v = cpu.mmapper.getUint8(addr);
+    cpu.setRegister(r8, v);
+    if (v+1 == 0x100) {
+        v = 0x0;
+    } else {
+        v += 1;
+    }
+    cpu.mmapper.setUint8(addr, v);
+}
+
+// export const scf = function(cpu: Cpu) { }
+// export const jr_c_r8 = function(cpu: Cpu) { }
+// export const sub_r8_r8 = function(cpu: Cpu) { }
+// export const sbc_r8_r8 = function(cpu: Cpu) { }
 

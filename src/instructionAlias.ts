@@ -42,7 +42,7 @@ export const alias: GBCommand = {
     INC_H: 0x24,
     DEC_H: 0x25,
     LD_H_D8: 0x26,
-    DDA: 0x27,
+    DAA: 0x27,
     JR_Z_R8: 0x28,
     ADD_HL_HL: 0x29,
     LD_A_REF_HL_PLUS: 0x2a,

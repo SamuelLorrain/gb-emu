@@ -112,13 +112,34 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.ADD_A_L: instructions.add_r8_r8(cpu, 'a', 'l'); break;
         case alias.LD_A_REF_BC: instructions.ld_r8_ref_r16(cpu, 'a', 'bc'); break;
         case alias.LD_A_REF_DE: instructions.ld_r8_ref_r16(cpu, 'a', 'bc'); break;
-        case alias.STOP_0: console.log("STOP"); throw Error("STOPPING"); break;
+        case alias.STOP_0: console.log("STOPPING"); break;
         case alias.RRA: instructions.rra(cpu); break;
         case alias.RLA: instructions.rla(cpu); break;
         case alias.JR_R8: instructions.jr_r8(cpu); break;
         case alias.JR_NZ_R8: instructions.jr_nz_r8(cpu); break;
         case alias.DAA: instructions.daa(cpu); break;
         case alias.JR_Z_R8: instructions.jr_z_r8(cpu); break;
-        case alias.LD_REF_HL_PLUS_A: instructions.ld_ref_hl_plus_a(cpu); break; // TODO
+        case alias.LD_REF_HL_PLUS_A: instructions.ld_ref_r16_plus_r8(cpu, 'hl', 'a'); break;
+        case alias.LD_REF_HL_MINUS_A: instructions.ld_ref_r16_minus_r8(cpu, 'hl', 'a'); break;
+        case alias.LD_A_REF_HL_PLUS: instructions.ld_r8_ref_r16_plus(cpu, 'hl', 'a'); break;
+        case alias.LD_A_REF_HL_MINUS: instructions.ld_r8_ref_r16_minus(cpu, 'hl', 'a'); break;
+        case alias.CPL: instructions.cpl(cpu, 'a'); break;
+        case alias.JR_NC_R8: instructions.jr_nc_r8(cpu); break;
+        case alias.INC_REF_HL: instructions.inc_ref_r16(cpu, 'hl'); break;
+        case alias.DEC_REF_HL: instructions.dec_ref_r16(cpu, 'hl'); break;
+        case alias.LD_REF_HL_D8: instructions.ld_ref_r16_d8(cpu, 'hl'); break;
+        case alias.SCF: instructions.scf(cpu); break;
+        case alias.JR_C_R8: instructions.jr_c_r8(cpu); break;
+        case alias.CCF: instructions.ccf(cpu); break;
+        case alias.LD_B_REF_HL: instructions.ld_r8_ref_r16(cpu, 'b', 'hl'); break;
+        case alias.LD_D_REF_HL: instructions.ld_r8_ref_r16(cpu, 'd', 'hl'); break;
+        case alias.LD_H_REF_HL: instructions.ld_r8_ref_r16(cpu, 'h', 'hl'); break;
+        case alias.LD_C_REF_HL: instructions.ld_r8_ref_r16(cpu, 'c', 'hl'); break;
+        case alias.LD_E_REF_HL: instructions.ld_r8_ref_r16(cpu, 'e', 'hl'); break;
+        case alias.LD_L_REF_HL: instructions.ld_r8_ref_r16(cpu, 'l', 'hl'); break;
+        case alias.LD_A_REF_HL: instructions.ld_r8_ref_r16(cpu, 'a', 'hl'); break;
+        case alias.HALT: console.log("HALT"); break;
+
+        default: throw Error(`${instructions} => NOT IMPLEMENTED`); break;
     }
 }
