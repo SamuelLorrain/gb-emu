@@ -4,13 +4,13 @@ export const debugReg = (cpu: Cpu) => {
     for(const reg in cpu.registerMap.heightBitsRegisterMapping) {
         const value = cpu.registerMap.getRegister(reg as keyof Object);
         console.log(
-            `${reg} : 0x${value}`
+            `${reg} : 0x${value.toString(16)}`
         );
     }
     for(const reg in cpu.registerMap.sixteenBitsRegisterMapping) {
         const value = cpu.registerMap.getRegister(reg as keyof Object);
         console.log(
-            `${reg} : 0x${value}`
+            `${reg} : 0x${value.toString(16)}`
         );
     }
 };

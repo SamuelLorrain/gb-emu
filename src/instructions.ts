@@ -24,8 +24,7 @@ export const ld_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
 export const ld_r16_nn = function(cpu: Cpu, reg: string) {
     const v1 = cpu.fetchNext();
     const v2 = cpu.fetchNext();
-    console.log(v1.toString(16) + " ::: " + v2.toString(16));
-    cpu.setRegister(reg, (v1 << 8) +v2);
+    cpu.setRegister(reg, (v2 << 8) + v1);
 }
 
 export const inc_r8 = function(cpu: Cpu, reg: string) {
@@ -45,6 +44,26 @@ export const inc_r8 = function(cpu: Cpu, reg: string) {
     cpu.setRegister(reg,newV);
 }
 
+export const inc_r16 = function(cpu: Cpu, reg: string) {
+    let v = cpu.getRegister(reg);
+    if (v >= 0xFFFF) {
+        v = 0;
+    } else {
+        v += 1;
+    }
+    cpu.setRegister(reg, v);
+}
+
+export const dec_r16 = function(cpu: Cpu, reg: string) {
+    let v = cpu.getRegister(reg);
+    if (v == 0x0) {
+        v = 0xFFFF;
+    } else {
+        v -= 1;
+    }
+    cpu.setRegister(reg, v);
+}
+
 // TODO could use typescript to ensure
 // that we can only pass a 8bits register to the command
 export const dec_r8 = function(cpu: Cpu, reg: string) {
@@ -60,17 +79,16 @@ export const dec_r8 = function(cpu: Cpu, reg: string) {
     if (v == 0) {
         cpu.setZFlag(1);
     }
-    // TODO "set if no borrow from bit 4"
-    if ((((v & 0xf) + (newV & 0xf)) & 0x10) === 0x10) {
+    if ((newV & 0xf) === 0) {
         cpu.setHFlag(1);
     }
     cpu.setRegister(reg,newV);
 }
 
-export const add_A_r8 = function(cpu: Cpu, r1: string) {
+export const add_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
     cpu.resetFlag();
-    let v1 = cpu.getRegister('a');
-    let v2 = cpu.getRegister(r1);
+    let v1 = cpu.getRegister(r1);
+    let v2 = cpu.getRegister(r2);
     let result = v1 + v2;
     if (result === 0) {
         cpu.setZFlag(1);
@@ -80,7 +98,7 @@ export const add_A_r8 = function(cpu: Cpu, r1: string) {
     if ((((v1 & 0xf) + (result & 0xf)) & 0x10) === 0x10) {
         cpu.setHFlag(1);
     }
-    cpu.setRegister('a', result & 0xff);
+    cpu.setRegister(r1, result & 0xff);
 }
 
 export const adc_A_r8 = function(cpu: Cpu, r1: string) {
@@ -133,16 +151,16 @@ export const xor_A_r8 = function(cpu: Cpu, r1: string) {
     cpu.setRegister('a', result);
 }
 
-export const ld_ref_hl_r8 = function(cpu: Cpu, reg: string) {
-    const addr = cpu.getRegister('h') << 8 + cpu.getRegister('l');
-    const value = cpu.getRegister(reg);
+export const ld_ref_r16_r8 = function(cpu: Cpu, r16: string, r8: string) {
+    const addr = cpu.getRegister(r16);
+    const value = cpu.getRegister(r8);
     cpu.mmapper.setUint8(addr, value);
 }
 
-export const ld_r8_ref_hl = function(cpu: Cpu, reg: string) {
-    const addr = cpu.getRegister('hl');
+export const ld_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
+    const addr = cpu.getRegister(r16);
     const value = cpu.mmapper.getUint8(addr);
-    cpu.setRegister(reg, value);
+    cpu.setRegister(r8, value);
 }
 
 export const rlca = function(cpu: Cpu) {
@@ -208,3 +226,115 @@ export const ccf = function(cpu: Cpu) {
     cpu.setNFlag(0);
     cpu.setHFlag(0);
 }
+
+export const ld_ref_nn_r16 = function(cpu: Cpu, reg: string) {
+    const v = cpu.getRegister(reg);
+    const addr = (cpu.fetchNext() << 8) + cpu.fetchNext();
+    cpu.mmapper.setUint16(addr, v);
+}
+
+export const add_r16_r16 = function(cpu: Cpu, r1: string, r2: string) {
+    const v1 = cpu.getRegister(r1);
+    const v2 = cpu.getRegister(r2);
+    cpu.setNFlag(0);
+    let v: number;
+    if ((v1 + v2) > 0xFFFF) {
+        v = (v1 + v2) - 0xFFFF
+        cpu.setCFlag(1);
+    } else {
+        v = v1 + v2
+    }
+    if ((((v1 & 0xff) + (v2 & 0xff)) & 0x100) === 0x100) {
+        cpu.setHFlag(1);
+    } else {
+        cpu.setHFlag(0);
+
+    }
+    cpu.setRegister(r1, v);
+}
+
+export const jr_r8 = function(cpu: Cpu) {
+    let addr = cpu.getRegister('pc');
+    addr += cpu.fetchNext();
+    cpu.setRegister('pc', addr);
+}
+
+export const jr_nz_r8 = function(cpu: Cpu) {
+    if (cpu.getZFlag() == 1) {
+        cpu.fetchNext();
+        return;
+    }
+    let addr = cpu.getRegister('pc');
+    addr += cpu.fetchNext();
+    cpu.setRegister('pc', addr);
+}
+
+export const jr_z_r8 = function(cpu: Cpu) {
+    if (cpu.getZFlag() == 0) {
+        cpu.fetchNext();
+        return;
+    }
+    let addr = cpu.getRegister('pc');
+    addr += cpu.fetchNext();
+    cpu.setRegister('pc', addr);
+}
+
+export const daa = function(cpu: Cpu) {
+    // found on the internet
+    let carry: number = 0;
+    if (cpu.getNFlag() == 0) {
+        if (cpu.getCFlag() == 1 || cpu.getRegister('a') > 0x99) {
+            if ((0x60 + cpu.getRegister('a')) > 0xFF) {
+                cpu.setRegister('a', (0x60 + cpu.getRegister('a')) - 0xFF);
+            } else {
+                cpu.setRegister('a', 0x60 + cpu.getRegister('a'));
+            }
+            carry = 1;
+        }
+        if (cpu.getNFlag() == 1 || ((cpu.getRegister('a') & 0x0f) > 0x09)) {
+            if ((0x06 + cpu.getRegister('a')) > 0xFF) {
+                cpu.setRegister('a', (0x06 + cpu.getRegister('a')) - 0xFF);
+            } else {
+                cpu.setRegister('a', 0x06 + cpu.getRegister('a'));
+            }
+        }
+    } else if (cpu.getCFlag() === 1) {
+        carry = 1;
+        let plus: number;
+        if (cpu.getHFlag() === 1) {
+            plus = 0x9a;
+        } else {
+            plus = 0xa0;
+        }
+        if ((plus + cpu.getRegister('a')) > 0xFF) {
+            cpu.setRegister('a', (plus + cpu.getRegister('a')) - 0xFF);
+        } else {
+            cpu.setRegister('a', plus + cpu.getRegister('a'));
+        }
+    } else if (cpu.getHFlag() === 1) {
+        if ((0xfa + cpu.getRegister('a')) > 0xFF) {
+            cpu.setRegister('a', (0xfa + cpu.getRegister('a')) - 0xFF);
+        } else {
+            cpu.setRegister('a', 0xfa + cpu.getRegister('a'));
+        }
+    }
+    if (cpu.getRegister('a') == 0) {
+        cpu.setZFlag(1);
+    }
+    cpu.setHFlag(0);
+    cpu.setCFlag(carry as 0|1);
+}
+
+export const ld_ref_hl_plus_a = function(cpu: Cpu) { }
+export const ld_ref_hl_minus_a = function(cpu: Cpu) { }
+export const inc_ref_r16 = function(cpu: Cpu) { }
+export const dec_ref_r16 = function(cpu: Cpu) { }
+export const scf = function(cpu: Cpu) { }
+export const jr_c_r8 = function(cpu: Cpu) {}
+export const ld_a_ref_hl_plus = function(cpu: Cpu) {}
+export const ld_a_ref_hl_minus = function(cpu: Cpu) {}
+export const cpl = function(cpu: Cpu) {}
+export const ccf = function(cpu: Cpu) {}
+export const sub_r8_r8 = function(cpu: Cpu) {}
+export const sbc_r8_r8 = function(cpu: Cpu) {}
+
