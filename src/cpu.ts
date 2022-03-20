@@ -104,4 +104,18 @@ export class Cpu {
     executeNext() {
         instructionsSet(this, this.fetchNext());
     }
+
+    pop() {
+        //
+    }
+
+    push(v: number) {
+        const vh = (v >> 8) & 0xff
+        const vl = v & 0xff;
+        const addr = this.getRegister('pc');
+        this.setRegister('pc', (addr + 1) && 0xffff);
+        this.mmapper.setUint8(this.getRegister('pc'), vh);
+        this.setRegister('pc', (addr + 2) && 0xffff);
+        this.mmapper.setUint8(this.getRegister('pc'), vl);
+    }
 }
