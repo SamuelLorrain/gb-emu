@@ -179,7 +179,7 @@ export const or_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
     if (result == 0) {
         cpu.setZFlag(0);
     }
-    cpu.setRegister(r, result);
+    cpu.setRegister(r8, result);
 }
 
 export const xor_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
