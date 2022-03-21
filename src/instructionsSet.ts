@@ -223,7 +223,39 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.CP_A: instructions.cp_r8_r8(cpu, 'a', 'a'); break;
 
         // 0xcz
-        // case alias.RET_NZ: instructions.ret_nz(cpu); break;
+        case alias.RET_NZ: instructions.ret_nz(cpu); break;
+        case alias.POP_BC: instructions.pop_r16(cpu, 'bc'); break;
+        case alias.JP_NZ_A16: instructions.jp_nz_a16(cpu); break;
+        case alias.JP_A16: instructions.jp_a16(cpu); break;
+        case alias.CALL_NZ_A16: instructions.call_nz_a16(cpu); break;
+        case alias.PUSH_BC: instructions.push_r16(cpu, 'bc'); break;
+        case alias.ADD_A_D8: instructions.add_r8_d8(cpu, 'a'); break;
+        case alias.RST_00H: instructions.rst_n(cpu, 0x0); break;
+        case alias.RET_Z: instructions.ret_z(cpu); break;
+        case alias.RET: instructions.ret(cpu); break;
+        case alias.JP_Z_A16: instructions.jp_z_a16(cpu); break;
+        case alias.PREFIX_CB: console.log("prefix cb"); break;
+        case alias.CALL_Z_A16: instructions.call_z_a16(cpu); break;
+        case alias.CALL_A16: instructions.call_a16(cpu); break;
+        case alias.ADC_A_D8: instructions.adc_r8_d8(cpu, 'a'); break;
+        case alias.RST_08H: instructions.rst_n(cpu, 0x08); break;
+
+        // 0xdz
+        case alias.RET_NC: instructions.ret_nc(cpu); break;
+        case alias.POP_BC: instructions.pop_r16(cpu, 'de'); break;
+        case alias.JP_NZ_A16: instructions.jp_nc_a16(cpu); break;
+        case 0xD3: throw new Error("0xD3 does not exists"); break;
+        case alias.CALL_NC_A16: instructions.call_nc_a16(cpu); break;
+        case alias.PUSH_DE: instructions.push_r16(cpu, 'de'); break;
+        case alias.SUB_D8: instructions.sub_r8_d8(cpu, 'a'); break;
+        case alias.RST_10H: instructions.rst_n(cpu, 0x10); break;
+        case alias.RET_C: instructions.ret_c(cpu); break;
+        case alias.RETI: instructions.reti(cpu); break;
+        case alias.JP_C_A16: instructions.jp_c_a16(cpu); break;
+        case 0xDB: throw new Error("0xDB does not exists"); break;
+        case alias.CALL_C_A16: instructions.call_c_a16(cpu); break;
+        case alias.SBC_D8: instructions.sbc_r8_d8(cpu, 'a'); break;
+        case alias.RST_18H: instructions.rst_n(cpu, 0x18); break;
 
         default: throw Error(`${instructions} => NOT IMPLEMENTED`); break;
     }

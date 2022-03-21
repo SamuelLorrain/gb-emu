@@ -550,6 +550,24 @@ export const sub_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
     }
 }
 
+export const sub_r8_d8 = function(cpu: Cpu, r1: string) {
+    const v1 = cpu.getRegister(r1);
+    const v2 = cpu.fetchNext();
+    let result: number = helpers.unsigned_sub(v1,v2, 0xff);
+    cpu.setRegister(r1, result);
+    cpu.resetFlag();
+    cpu.setNFlag(1);
+    if(result == 0) {
+        cpu.setZFlag(1);
+    }
+    if ((helpers.unsigned_sub(v1 & 0xf, v2 & 0xf, 0xff) & (0xf +1)) != 0) {
+        cpu.setHFlag(1);
+    }
+    if(v1 - v2 < 0) {
+        cpu.setCFlag(1);
+    }
+}
+
 export const cp_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
     const v1 = cpu.getRegister(r1);
     const v2 = cpu.getRegister(r2);
@@ -588,6 +606,30 @@ export const cp_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
 export const sbc_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
     const v1 = cpu.getRegister(r1);
     const v2 = cpu.getRegister(r2);
+    let result: number = helpers.unsigned_sub(helpers.unsigned_sub(v1,v2, 0xff), cpu.getCFlag(), 0xff);
+    cpu.setRegister(r1, result);
+    cpu.resetFlag();
+    cpu.setNFlag(1);
+    if(result == 0) {
+        cpu.setZFlag(1);
+    }
+    if ((helpers.unsigned_sub(
+            helpers.unsigned_sub(
+                v1 & 0xf,
+                v2 & 0xf,
+                0xff),
+            cpu.getCFlag(),
+            0xff) & (0xf +1)) != 0) {
+        cpu.setHFlag(1);
+    }
+    if(v1 - (v2+cpu.getCFlag()) < 0) {
+        cpu.setCFlag(1);
+    }
+}
+
+export const sbc_r8_d8 = function(cpu: Cpu, r1: string) {
+    const v1 = cpu.getRegister(r1);
+    const v2 = cpu.fetchNext();
     let result: number = helpers.unsigned_sub(helpers.unsigned_sub(v1,v2, 0xff), cpu.getCFlag(), 0xff);
     cpu.setRegister(r1, result);
     cpu.resetFlag();
@@ -654,7 +696,213 @@ export const sub_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
 }
 
 export const ret_nz = function(cpu: Cpu) {
+    if (cpu.getZFlag() == 0) {
+        return;
+    }
+    cpu.setRegister('pc', cpu.pop());
+}
+
+export const ret_nc = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 0) {
+        return;
+    }
+    cpu.setRegister('pc', cpu.pop());
+}
+
+export const ret_z = function(cpu: Cpu) {
     if (cpu.getZFlag() == 1) {
         return;
     }
+    cpu.setRegister('pc', cpu.pop());
+}
+
+export const ret_c = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 1) {
+        return;
+    }
+    cpu.setRegister('pc', cpu.pop());
+}
+
+export const ret = function(cpu: Cpu) {
+    cpu.setRegister('pc', cpu.pop());
+}
+
+export const pop_r16 = function(cpu: Cpu, r16: string) {
+    cpu.setRegister(r16, cpu.pop());
+}
+
+export const jp_nz_a16 = function(cpu: Cpu) {
+    if (cpu.getZFlag() == 0) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.setRegister('pc', addr);
+}
+
+export const jp_nc_a16 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 0) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.setRegister('pc', addr);
+}
+
+export const jp_z_a16 = function(cpu: Cpu) {
+    if (cpu.getZFlag() == 1) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.setRegister('pc', addr);
+}
+
+export const jp_c_a16 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 1) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.setRegister('pc', addr);
+}
+
+export const jp_a16 = function(cpu: Cpu) {
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.setRegister('pc', addr);
+}
+
+export const call_nz_a16 = function(cpu: Cpu) {
+    if (cpu.getZFlag() == 0) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.push(cpu.getRegister('pc') + 1);
+    cpu.setRegister('pc', addr);
+}
+
+export const call_z_a16 = function(cpu: Cpu) {
+    if (cpu.getZFlag() == 1) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.push(cpu.getRegister('pc') + 1);
+    cpu.setRegister('pc', addr);
+}
+
+export const call_c_a16 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 1) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.push(cpu.getRegister('pc') + 1);
+    cpu.setRegister('pc', addr);
+}
+
+export const call_a16 = function(cpu: Cpu) {
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.push(cpu.getRegister('pc') + 1);
+    cpu.setRegister('pc', addr);
+}
+
+export const push_r16 = function(cpu: Cpu, r16: string) {
+    cpu.push(cpu.getRegister(r16));
+}
+
+export const add_r8_d8 = function(cpu: Cpu, r8: string) {
+    cpu.resetFlag();
+    let v1 = cpu.getRegister(r8);
+    let v2 = cpu.fetchNext();
+    let result = v1 + v2;
+    if (result === 0) {
+        cpu.setZFlag(1);
+    } else if (result > 0xff) {
+        cpu.setCFlag(1);
+    }
+    if ((((v1 & 0xf) + (result & 0xf)) & 0x10) === 0x10) {
+        cpu.setHFlag(1);
+    }
+    cpu.setRegister(r8, result & 0xff);
+}
+
+export const adc_r8_d8 = function(cpu: Cpu, r8: string) {
+    const v1 = cpu.getRegister(r8);
+    const v2 = cpu.fetchNext();
+    const carry = cpu.getCFlag();
+    let result = v1 + v2 + carry;
+    cpu.resetFlag();
+    if ((v1 + v2 + carry) > 0xff) {
+        cpu.setCFlag(1);
+    }
+    if ((((v1 & 0xf) + (v2 & 0xf)) + carry) > 0xf) {
+        cpu.setHFlag(1);
+    }
+
+    if(v1+v2 > 0xFF) {
+        result = (v1+v2) - 0xFF;
+    } else {
+        result = v1 + v2;
+    }
+    if(result+carry > 0xFF) {
+        result = 0;
+    } else {
+        result += carry;
+    }
+
+    if (result === 0) {
+        cpu.setZFlag(1);
+    }
+
+    cpu.setRegister(r8, result);
+}
+
+export const rst_n = function(cpu: Cpu, n: number) {
+    cpu.push(cpu.getRegister('pc'));
+    cpu.setRegister('pc', n);
+}
+
+export const call_nc_a16 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 0) {
+        cpu.fetchNext();
+        cpu.fetchNext();
+        return;
+    }
+    const vl = cpu.fetchNext();;
+    const vh = cpu.fetchNext();;
+    const addr = (vh << 8) + vl;
+    cpu.push(cpu.getRegister('pc') + 1);
+    cpu.setRegister('pc', addr);
+}
+
+export const reti = function(cpu: Cpu) {
+    cpu.setRegister('pc', cpu.pop());
+    cpu.ime = true;
 }

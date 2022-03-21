@@ -6,10 +6,12 @@ import { instructionsSet } from './instructionsSet';
 export class Cpu {
     mmapper: MemoryMapper;
     registerMap: RegisterMap;
+    ime: boolean;
 
     constructor(mmapper: MemoryMapper, registerMap: RegisterMap) {
         this.mmapper = mmapper;
         this.registerMap = registerMap;
+        this.ime = false; // interrupt master enable
     }
 
     debugReg() {
