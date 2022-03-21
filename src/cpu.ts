@@ -106,16 +106,21 @@ export class Cpu {
     }
 
     pop() {
-        //
+        const addr = this.getRegister('pc');
+        const vl = this.mmapper.getUint8(addr);
+        this.setRegister('pc', addr + 1);
+        const vh = this.mmapper.getUint8(addr + 1);
+        this.setRegister('pc', addr + 2);
+        return (vh << 8) + vl;
     }
 
     push(v: number) {
         const vh = (v >> 8) & 0xff
         const vl = v & 0xff;
         const addr = this.getRegister('pc');
-        this.setRegister('pc', (addr + 1) && 0xffff);
+        this.setRegister('pc', addr - 1);
         this.mmapper.setUint8(this.getRegister('pc'), vh);
-        this.setRegister('pc', (addr + 2) && 0xffff);
+        this.setRegister('pc', (addr - 2));
         this.mmapper.setUint8(this.getRegister('pc'), vl);
     }
 }
