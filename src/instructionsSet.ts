@@ -234,7 +234,7 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.RET_Z: instructions.ret_z(cpu); break;
         case alias.RET: instructions.ret(cpu); break;
         case alias.JP_Z_A16: instructions.jp_z_a16(cpu); break;
-        case alias.PREFIX_CB: console.log("prefix cb"); break;
+        case alias.PREFIX_CB: handlePrefixCB() ; break;
         case alias.CALL_Z_A16: instructions.call_z_a16(cpu); break;
         case alias.CALL_A16: instructions.call_a16(cpu); break;
         case alias.ADC_A_D8: instructions.adc_r8_d8(cpu, 'a'); break;
@@ -257,6 +257,50 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.SBC_D8: instructions.sbc_r8_d8(cpu, 'a'); break;
         case alias.RST_18H: instructions.rst_n(cpu, 0x18); break;
 
+        // 0xez
+        case alias.LDH_REF_A8_A: instructions.ldh_ref_d8_r8(cpu, 'a'); break;
+        case alias.POP_HL: instructions.pop_r16(cpu, 'hl'); break;
+        case alias.LD_REF_C_A: instructions.ld_ref_c_r8(cpu, 'a'); break;
+        case 0xE3: throw new Error("0xE3 does not exists"); break;
+        case 0xE4: throw new Error("0xE4 does not exists"); break;
+        case alias.PUSH_HL: instructions.push_r16(cpu, 'hl'); break;
+        case alias.AND_D8: instructions.and_r8_d8(cpu, 'a'); break;
+        case alias.RST_20H: instructions.rst_n(cpu, 0x20); break;
+        case alias.ADD_SP_R8: instructions.add_r16_d8signed(cpu, 'sp'); break;
+        case alias.JP_REF_HL: instructions.jp_ref_r16(cpu, 'hl'); break;
+        case alias.LD_REF_A16_A: instructions.ld_ref_d16_r8(cpu, 'a'); break;
+        case alias.LD_REF_A16_A: instructions.ld_ref_d16_r8(cpu, 'a'); break;
+        case 0xEB: throw new Error("0xEB does not exists"); break;
+        case 0xEC: throw new Error("0xEC does not exists"); break;
+        case 0xED: throw new Error("0xED does not exists"); break;
+        case alias.XOR_D8: instructions.xor_d8(cpu); break;
+        case alias.RST_28H: instructions.rst_n(cpu, 0x28); break;
+
+        // 0xfz
+        case alias.LDH_A_REF_A8: instructions.ld_r8_ref_d8(cpu, 'a'); break;
+        case alias.POP_AF: instructions.pop_r16(cpu, 'af'); break;
+        case alias.LD_A_REF_C: instructions.ld_r8_ref_c(cpu, 'a'); break;
+        case alias.DI: cpu.disableInterruptNext(); break;
+        case 0xF4: throw new Error("0xf4 does not exists"); break;
+        case alias.PUSH_AF: instructions.push_r16t(cpu, 'af'); break;
+        case alias.OR_D8: instructions.or_r8_d8(cpu, 'a'); break;
+        case alias.RST_30H: instructions.rst_n(cpu, 0x30); break;
+        case alias.LD_HL_SP_PLUS_R8: instructions.ld_hl_sp_plus_d8(cpu); break;
+        case alias.LD_SP_HL: instructions.ld_r16_r16(cpu, 'sp', 'hl'); break;
+        case alias.LD_A_REF_A16: instructions.ld_r8_ref_d16(cpu, 'a'); break;
+        case alias.EI: cpu.enableInterruptNext(); break;
+        case 0xFC: throw new Error('0xfc does not exists'); break;
+        case 0xFD: throw new Error('0xfd does not exists'); break;
+        case alias.CP_D8: instructions.cp_d8(cpu); break;
+        case alias.RST_38H: instructions.rst_n(cpu, 0x38); break;
+
         default: throw Error(`${instructions} => NOT IMPLEMENTED`); break;
+    }
+}
+
+function handlePrefixCB(cpu: Cpu) {
+    const instruction = cpu.fetchNext();
+    switch (instruction) {
+        
     }
 }
