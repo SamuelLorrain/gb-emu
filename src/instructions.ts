@@ -906,3 +906,40 @@ export const reti = function(cpu: Cpu) {
     cpu.setRegister('pc', cpu.pop());
     cpu.ime = true;
 }
+
+export const ldh_ref_d8_r8 = function(cpu: Cpu, r8:string) {
+    const addr = 0xff + cpu.fetchNext();
+    cpu.mmapper.setUint8(addr, cpu.getRegister(r8));
+}
+
+export const ld_ref_c_r8 = function(cpu: Cpu, r8:string) {
+    const addr = 0xff + cpu.getRegister('c');
+    cpu.mmapper.setUint8(addr, cpu.getRegister(r8));
+}
+
+export const and_r8_d8 = function(cpu: Cpu, r1: string) {
+    cpu.resetFlag();
+    cpu.setHFlag(1);
+    const a = cpu.getRegister(r1);
+    const v = cpu.fetchNext();
+    const result = a & v;
+    if (result == 0) {
+        cpu.setZFlag(0);
+    }
+    cpu.setRegister(r1, result);
+}
+
+export const add_r16_d8signed = function(cpu: Cpu, r16: string) {
+    cpu.resetFlag();
+    let v1 = cpu.getRegister(r16);
+    let v2 = cpu.fetchNext();
+    let result = v1 + v2;
+
+    if (((v1 ^ v2 ^ (result & 0xffff)) & 0x100) == 0x100) {
+        cpu.setCFlag(1);
+    }
+    if (((v1 ^ v2 ^ (result & 0xffff)) & 0x10) == 0x10) {
+        cpu.setHFlag(1);
+    }
+    cpu.setRegister(r16, result);
+}

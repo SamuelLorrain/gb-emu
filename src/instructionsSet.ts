@@ -234,7 +234,7 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.RET_Z: instructions.ret_z(cpu); break;
         case alias.RET: instructions.ret(cpu); break;
         case alias.JP_Z_A16: instructions.jp_z_a16(cpu); break;
-        case alias.PREFIX_CB: handlePrefixCB() ; break;
+        case alias.PREFIX_CB: handlePrefixCB(cpu) ; break;
         case alias.CALL_Z_A16: instructions.call_z_a16(cpu); break;
         case alias.CALL_A16: instructions.call_a16(cpu); break;
         case alias.ADC_A_D8: instructions.adc_r8_d8(cpu, 'a'); break;
@@ -294,13 +294,13 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.CP_D8: instructions.cp_d8(cpu); break;
         case alias.RST_38H: instructions.rst_n(cpu, 0x38); break;
 
-        default: throw Error(`${instructions} => NOT IMPLEMENTED`); break;
+        default: throw Error(`${instructions} doesn't exist`); break;
     }
 }
 
 function handlePrefixCB(cpu: Cpu) {
     const instruction = cpu.fetchNext();
     switch (instruction) {
-        
+        default: throw Error(`${instruction} doesn't exist`); break;
     }
 }
