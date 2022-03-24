@@ -1021,3 +1021,55 @@ export const cp_r8_d8 = function(cpu: Cpu, r1: string) {
         cpu.setCFlag(1);
     }
 }
+
+export const rlc_r8 = function(cpu: Cpu, r8: string)
+{
+    cpu.resetFlag();
+    const rv = cpu.getRegister(r8);
+    const bit7 = (rv >> 8);
+    cpu.setCFlag(bit7 as 0|1);
+    cpu.setRegister(r8, (rv << 1) + bit7);
+    if (cpu.getRegister(r8) === 0) {
+        cpu.setZFlag(1);
+    }
+}
+
+export const rlc_ref_r16 = function(cpu: Cpu, r16: string)
+{
+    cpu.resetFlag();
+    const addr = cpu.getRegister(r16);
+    const rv = cpu.mmapper.getUint8(addr);
+    const bit7 = (rv >> 8);
+    cpu.setCFlag(bit7 as 0|1);
+    const newV = (rv << 1) + bit7;
+    if (newV === 0) {
+        cpu.setZFlag(1);
+    }
+    cpu.mmapper.setUint8(addr, newV);
+}
+
+export const rrc_r8 = function(cpu: Cpu, r8: string)
+{
+    cpu.resetFlag();
+    const rv = cpu.getRegister(r8);
+    const bit0 = rv & 0b1;
+    cpu.setCFlag(bit0 as 0|1);
+    cpu.setRegister(r8, (rv >> 1) + (bit0 << 7));
+    if (cpu.getRegister(r8) === 0) {
+        cpu.setZFlag(1);
+    }
+}
+
+export const rrc_ref_r16 = function(cpu: Cpu, r16: string)
+{
+    cpu.resetFlag();
+    const addr = cpu.getRegister(r16);
+    const v = cpu.mmapper.getUint8(addr);
+    const bit0 = v & 0b1;
+    cpu.setCFlag(bit0 as 0|1);
+    const newV =  (v >> 1) + (bit0 << 7);
+    if (newV === 0) {
+        cpu.setZFlag(1);
+    }
+    cpu.mmapper.setUint8(addr, newV);
+}
