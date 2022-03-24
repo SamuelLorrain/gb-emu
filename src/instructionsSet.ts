@@ -269,7 +269,6 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.ADD_SP_R8: instructions.add_r16_d8signed(cpu, 'sp'); break;
         case alias.JP_REF_HL: instructions.jp_ref_r16(cpu, 'hl'); break;
         case alias.LD_REF_A16_A: instructions.ld_ref_d16_r8(cpu, 'a'); break;
-        case alias.LD_REF_A16_A: instructions.ld_ref_d16_r8(cpu, 'a'); break;
         case 0xEB: throw new Error("0xEB does not exists"); break;
         case 0xEC: throw new Error("0xEC does not exists"); break;
         case 0xED: throw new Error("0xED does not exists"); break;
@@ -277,12 +276,12 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.RST_28H: instructions.rst_n(cpu, 0x28); break;
 
         // 0xfz
-        case alias.LDH_A_REF_A8: instructions.ld_r8_ref_d8(cpu, 'a'); break;
+        case alias.LDH_A_REF_A8: instructions.ldh_r8_ref_d8(cpu, 'a'); break;
         case alias.POP_AF: instructions.pop_r16(cpu, 'af'); break;
         case alias.LD_A_REF_C: instructions.ld_r8_ref_c(cpu, 'a'); break;
         case alias.DI: cpu.disableInterruptNext(); break;
         case 0xF4: throw new Error("0xf4 does not exists"); break;
-        case alias.PUSH_AF: instructions.push_r16t(cpu, 'af'); break;
+        case alias.PUSH_AF: instructions.push_r16(cpu, 'af'); break;
         case alias.OR_D8: instructions.or_r8_d8(cpu, 'a'); break;
         case alias.RST_30H: instructions.rst_n(cpu, 0x30); break;
         case alias.LD_HL_SP_PLUS_R8: instructions.ld_hl_sp_plus_d8(cpu); break;
@@ -291,7 +290,7 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.EI: cpu.enableInterruptNext(); break;
         case 0xFC: throw new Error('0xfc does not exists'); break;
         case 0xFD: throw new Error('0xfd does not exists'); break;
-        case alias.CP_D8: instructions.cp_d8(cpu); break;
+        case alias.CP_D8: instructions.cp_r8_d8(cpu, 'a'); break;
         case alias.RST_38H: instructions.rst_n(cpu, 0x38); break;
 
         default: throw Error(`${instructions} doesn't exist`); break;
@@ -304,3 +303,4 @@ function handlePrefixCB(cpu: Cpu) {
         default: throw Error(`${instruction} doesn't exist`); break;
     }
 }
+

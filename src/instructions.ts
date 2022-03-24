@@ -28,6 +28,11 @@ export const ld_r16_nn = function(cpu: Cpu, reg: string) {
     cpu.setRegister(reg, (v2 << 8) + v1);
 }
 
+export const ld_r16_r16 = function(cpu: Cpu, r1: string, r2: string) {
+    const v2 = cpu.getRegister(r2);
+    cpu.setRegister(r1, v2);
+}
+
 export const inc_r8 = function(cpu: Cpu, reg: string) {
     cpu.resetFlag();
     cpu.setNFlag(0);
@@ -170,6 +175,17 @@ export const or_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
     cpu.setRegister(r1, result);
 }
 
+export const or_r8_d8 = function(cpu: Cpu, r1: string) {
+    cpu.resetFlag();
+    const a = cpu.getRegister(r1);
+    const v = cpu.fetchNext();
+    const result = a | v;
+    if (result == 0) {
+        cpu.setZFlag(0);
+    }
+    cpu.setRegister(r1, result);
+}
+
 export const or_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
     cpu.resetFlag();
     const a = cpu.getRegister(r8);
@@ -191,6 +207,17 @@ export const xor_r8_r8 = function(cpu: Cpu, r1: string, r2: string) {
         cpu.setZFlag(0);
     }
     cpu.setRegister(r1, result);
+}
+
+export const xor_d8 = function(cpu: Cpu) {
+    cpu.resetFlag();
+    const a = cpu.getRegister('a');
+    const v = cpu.fetchNext();
+    const result = a ^ v;
+    if (result == 0) {
+        cpu.setZFlag(0);
+    }
+    cpu.setRegister('a', result);
 }
 
 export const xor_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
@@ -221,6 +248,24 @@ export const ld_r8_ref_r16 = function(cpu: Cpu, r8: string, r16: string) {
     const addr = cpu.getRegister(r16);
     const value = cpu.mmapper.getUint8(addr);
     cpu.setRegister(r8, value);
+}
+
+export const ld_r8_ref_d16 = function(cpu: Cpu, r8: string) {
+    const addr = (cpu.fetchNext() << 8) + cpu.fetchNext();
+    const value = cpu.mmapper.getUint8(addr);
+    cpu.setRegister(r8, value);
+}
+
+export const ld_r8_ref_c = function(cpu: Cpu, r8: string) {
+    const addr = 0xff + cpu.getRegister('c');
+    const value = cpu.mmapper.getUint8(addr);
+    cpu.setRegister(r8, value);
+}
+
+export const ld_ref_d16_r8 = function(cpu: Cpu, r8: string) {
+    const addr = (cpu.fetchNext() << 8) + cpu.fetchNext();
+    const value = cpu.getRegister(r8);
+    cpu.mmapper.setUint8(addr, value);
 }
 
 export const rlca = function(cpu: Cpu) {
@@ -912,6 +957,11 @@ export const ldh_ref_d8_r8 = function(cpu: Cpu, r8:string) {
     cpu.mmapper.setUint8(addr, cpu.getRegister(r8));
 }
 
+export const ldh_r8_ref_d8 = function(cpu: Cpu, r8:string) {
+    const addr = 0xff + cpu.fetchNext();
+    cpu.setRegister(r8, cpu.mmapper.getUint8(addr));
+}
+
 export const ld_ref_c_r8 = function(cpu: Cpu, r8:string) {
     const addr = 0xff + cpu.getRegister('c');
     cpu.mmapper.setUint8(addr, cpu.getRegister(r8));
@@ -942,4 +992,32 @@ export const add_r16_d8signed = function(cpu: Cpu, r16: string) {
         cpu.setHFlag(1);
     }
     cpu.setRegister(r16, result);
+}
+
+export const jp_ref_r16 = function(cpu: Cpu, r16: string) {
+    const addr = cpu.mmapper.getUint8(cpu.getRegister(r16));
+    cpu.setRegister('pc', addr);
+}
+
+
+export const ld_hl_sp_plus_d8 = function(cpu: Cpu) {
+    throw new Error("ldhl SP+d8 To implement (signed int)");
+}
+
+
+export const cp_r8_d8 = function(cpu: Cpu, r1: string) {
+    const v1 = cpu.getRegister(r1);
+    const v2 = cpu.fetchNext();
+    let result: number = helpers.unsigned_sub(v1,v2, 0xff);
+    cpu.resetFlag();
+    cpu.setNFlag(1);
+    if(result == 0) {
+        cpu.setZFlag(1);
+    }
+    if ((helpers.unsigned_sub(v1 & 0xf, v2 & 0xf, 0xff) & (0xf +1)) != 0) {
+        cpu.setHFlag(1);
+    }
+    if(v1 - v2 < 0) {
+        cpu.setCFlag(1);
+    }
 }

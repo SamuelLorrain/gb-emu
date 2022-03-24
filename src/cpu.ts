@@ -7,11 +7,13 @@ export class Cpu {
     mmapper: MemoryMapper;
     registerMap: RegisterMap;
     ime: boolean;
+    interrupt: boolean;
 
     constructor(mmapper: MemoryMapper, registerMap: RegisterMap) {
         this.mmapper = mmapper;
         this.registerMap = registerMap;
         this.ime = false; // interrupt master enable
+        this.interrupt = false;
     }
 
     debugReg() {
@@ -125,4 +127,21 @@ export class Cpu {
         this.setRegister('pc', (addr - 2));
         this.mmapper.setUint8(this.getRegister('pc'), vl);
     }
+
+    disableInterruptNext() {
+        this.interrupt = false;
+    }
+
+    enableInterruptNext() {
+        this.interrupt = true;
+    }
+
+    setInterruptNext(b: boolean) {
+        this.interrupt = b;
+    }
+
+    toggleInterruptNext() {
+        this.interrupt = !this.interrupt;
+    }
+
 }
