@@ -1,26 +1,8 @@
-import { Cpu } from '../src/cpu';
-import { GBRegisters } from '../src/registers';
-import { createMemory } from '../src/ram';
-import { alias } from '../src/instructionAlias';
-import { MemoryMapper } from '../src/memorymapper';
+import { makeTestGB } from './init';
 
-const makeFullGB = () => {
-    let ram = createMemory(0xFFFF);
-    let vram = createMemory(0x2000);
-    let mm = new MemoryMapper();
-    mm.map(0, 0xffff, ram);
-    mm.map(0x8000, 0xa000, vram);
-    let cpu = new Cpu(mm, new GBRegisters());
-    return {
-        ram,
-        vram,
-        mm,
-        cpu
-    };
-}
 
 test('Can set 16 bits registers', function () {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     expect(gb.cpu.getRegister('af')).toBe(0);
     expect(gb.cpu.getRegister('bc')).toBe(0);
     expect(gb.cpu.getRegister('de')).toBe(0);
@@ -52,7 +34,7 @@ test('Can set 16 bits registers', function () {
 });
 
 test('GB is successfully initiated', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     expect(gb.cpu.getRegister('a')).toBe(0);
     expect(gb.cpu.getRegister('f')).toBe(0);
     expect(gb.cpu.getRegister('b')).toBe(0);
@@ -70,7 +52,7 @@ test('GB is successfully initiated', function() {
 });
 
 test('can set registers', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     gb.cpu.setRegister('a', 1);
     gb.cpu.setRegister('f', 1);
     gb.cpu.setRegister('b', 1);
@@ -94,7 +76,7 @@ test('can set registers', function() {
 });
 
 test('can fetchNext() instruction', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     gb.ram.setUint8(0x0, 0xFF);
     gb.ram.setUint8(0x1, 0xAA);
     expect(gb.cpu.fetchNext()).toBe(0xFF);
@@ -104,15 +86,15 @@ test('can fetchNext() instruction', function() {
 });
 
 test('can execute instruction', function() {
-    const gb = makeFullGB();
-    gb.ram.setUint8(0x0, alias.NOP);
+    const gb = makeTestGB();
+    gb.ram.setUint8(0x0, 0x0);
     gb.cpu.executeNext();
     expect(gb.cpu.getRegister('pc')).toBe(0x1);
 });
 
 
 test('can set zero flag without touching others', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     expect(gb.cpu.getRegister('f')).toBe(0b00000000);
     gb.cpu.setZFlag(1);
     expect(gb.cpu.getRegister('f')).toBe(0b10000000);
@@ -127,7 +109,7 @@ test('can set zero flag without touching others', function() {
 });
 
 test('can set substract/N flag without touching others', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     expect(gb.cpu.getRegister('f')).toBe(0b00000000);
     gb.cpu.setNFlag(1);
     expect(gb.cpu.getRegister('f')).toBe(0b01000000);
@@ -143,7 +125,7 @@ test('can set substract/N flag without touching others', function() {
 
 
 test('can set half-carry flag without touching others', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     expect(gb.cpu.getRegister('f')).toBe(0b00000000);
     gb.cpu.setHFlag(1);
     expect(gb.cpu.getRegister('f')).toBe(0b00100000);
@@ -159,7 +141,7 @@ test('can set half-carry flag without touching others', function() {
 
 
 test('can set carry flag without touching others', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     expect(gb.cpu.getRegister('f')).toBe(0b00000000);
     gb.cpu.setCFlag(1);
     expect(gb.cpu.getRegister('f')).toBe(0b00010000);
@@ -174,7 +156,7 @@ test('can set carry flag without touching others', function() {
 });
 
 test('can push', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     gb.cpu.setRegister('pc', 0xff);
     gb.cpu.push(0xabcd);
     expect(gb.cpu.getRegister('pc')).toBe(0xfd);
@@ -183,7 +165,7 @@ test('can push', function() {
 });
 
 test('can pop', function() {
-    const gb = makeFullGB();
+    const gb = makeTestGB();
     gb.cpu.setRegister('pc', 0xfd);
     gb.mm.setUint8(0xfe, 0xab);
     gb.mm.setUint8(0xfd, 0xcd);

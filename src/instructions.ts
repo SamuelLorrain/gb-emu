@@ -1232,7 +1232,7 @@ export const bit_x_r8 = function(cpu: Cpu, x: number, r8: string) {
 export const bit_x_ref_r16 = function(cpu: Cpu, x: number, r16: string) {
     cpu.setNFlag(0);
     cpu.setHFlag(1);
-    cpu.setZFlag((cpu.getRegister(r8) & (1 << x)) as 0|1);
+    cpu.setZFlag((cpu.getRegister(r16) & (1 << x)) as 0|1);
 }
 
 export const res_x_r8 = function(cpu: Cpu, x: number, r8: string) {

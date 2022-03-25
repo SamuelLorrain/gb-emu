@@ -143,5 +143,4 @@ export class Cpu {
     toggleInterruptNext() {
         this.interrupt = !this.interrupt;
     }
-
 }
