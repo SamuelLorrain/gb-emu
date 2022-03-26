@@ -18,3 +18,6 @@ export const is_add_overflow = function(x: number, y: number, maxValue: number) 
     return x + y > maxValue;
 };
 
+export const to_signed_i8 = function(x:number) {
+    return x & 0x80 ? x-256 : x;
+};
