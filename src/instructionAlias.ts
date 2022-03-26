@@ -261,7 +261,7 @@ export const alias: GBCommand = {
     RST_38H: 0xff,
 };
 
-export const prefixGBCommand: GBCommand = {
+export const prefixCBAlias: GBCommand = {
     RLC_B: 0x00,
     RLC_C: 0x01,
     RLC_D: 0x02,
