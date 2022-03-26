@@ -6,8 +6,8 @@
         "noEmitOnError": true,
         "strict": true,
         "sourceMap": true,
-        "downlevelIteration": true,
+        "downlevelIteration": true
     },
     "include": ["./src/**/*"],
-    "exclude": ["node_modules", "**/*.spec.ts"]
+    "exclude": ["node_modules", "**/*.spec.ts", "*.bin"]
 }

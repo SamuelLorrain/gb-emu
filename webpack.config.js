@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const { warn } = require('console');
 
 const nodeConfig = {
     target: 'node',
@@ -12,6 +13,14 @@ const nodeConfig = {
     module: {
         rules: [
             {
+                test: /\.b64$/,
+                use: [
+                    {
+                        loader:'raw-loader'
+                    }
+                ],
+            },
+            {
                 test: /\.tsx?$/,
                 use: [
                     {
@@ -22,7 +31,7 @@ const nodeConfig = {
                     },
                     'ts-loader',
                 ],
-                exclude: /node_modules/,
+                exclude: [/node_modules/],
             },
         ],
     },

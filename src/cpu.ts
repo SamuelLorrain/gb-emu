@@ -31,9 +31,11 @@ export class Cpu {
     setRegister(reg: string, n: number) {
         this.registerMap.setRegister(reg as keyof Object, n);
     }
+
     getRegister(reg: string): number {
         return this.registerMap.getRegister(reg as keyof Object);
     }
+
     resetFlag() {
         this.registerMap.setRegister('f' as keyof Object, 0);
     }
@@ -143,4 +145,5 @@ export class Cpu {
     toggleInterruptNext() {
         this.interrupt = !this.interrupt;
     }
+
 }
