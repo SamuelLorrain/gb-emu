@@ -23,17 +23,39 @@ for(const [index, byte] of testRom.entries()) {
 let cpu = new Cpu(mm, new GBRegisters());
 
 cpu.executeNext(); // LD SP,$fffe
-cpu.debugReg();
 cpu.executeNext(); // XOR A
-cpu.debugReg();
 cpu.executeNext(); // LD HL,$9FFF
-cpu.debugReg();
 cpu.executeNext(); // LD (HL-), A
-cpu.debugReg();
 cpu.executeNext(); // BIT 7,H
-cpu.debugReg();
 cpu.executeNext(); // JR, NZ, Addr__0007
+cpu.executeNext();
+// pass the loop
+cpu.setRegister('pc', 0xc);
+cpu.prefetchedInstruction = cpu.mmapper.getUint8(cpu.getRegister('pc'));
+cpu.executeNext(); // LD HL,$ff26
+cpu.executeNext(); // LD C,$11
+cpu.executeNext(); // LD A,$80
+cpu.executeNext(); // LD (HL-),A
+cpu.executeNext(); // LD ($ff00+C),A
+cpu.executeNext(); // INC C
+cpu.executeNext(); // LD A,$f3
+cpu.executeNext(); // LD ($ff00+C),A
+cpu.executeNext(); // LD (HL-),A
+cpu.executeNext(); // LD A,$77
+cpu.executeNext(); // LD (HL),A
+cpu.executeNext(); // LD A,$fc
+cpu.executeNext(); // LD ($ff00+$47),A
+cpu.executeNext(); // LD DE,$0104
+cpu.executeNext(); // LD HL,$8010
+cpu.executeNext(); // LD A,(DE) (no card inserted so value is 0)
 cpu.debugReg();
-cpu.executeNext(); // (LOOP to 0x7)
+console.log("====");
+cpu.executeNext(); // CALL $0095
 cpu.debugReg();
+cpu.debugMemory(0xfffc, 1);
+cpu.debugMemory(0xfffe, 1);
+// cpu.debugMemory(0xff11, 5);
+// cpu.debugMemory(0xff26, 5);
+// cpu.debugMemory(0xff47, 5);
+// cpu.debugMemory(0x0104, 5);
 

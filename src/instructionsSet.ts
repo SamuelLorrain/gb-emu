@@ -34,7 +34,7 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.RLA: instructions.rla(cpu); break;
         case alias.JR_R8: instructions.jr_r8(cpu); break;
         case alias.ADD_HL_DE: instructions.add_r16_r16(cpu, 'hl', 'de'); break;
-        case alias.LD_A_REF_DE: instructions.ld_r8_ref_r16(cpu, 'a', 'bc'); break;
+        case alias.LD_A_REF_DE: instructions.ld_r8_ref_r16(cpu, 'a', 'de'); break;
         case alias.DEC_DE: instructions.dec_r16(cpu, 'de'); break;
         case alias.INC_E: instructions.inc_r8(cpu, 'e'); break;
         case alias.DEC_E: instructions.dec_r8(cpu, 'e'); break;
@@ -74,7 +74,7 @@ export const instructionsSet = function(cpu: Cpu, instruction: number) {
         case alias.DEC_SP: instructions.dec_r16(cpu, 'sp'); break;
         case alias.INC_A: instructions.inc_r8(cpu, 'a'); break;
         case alias.DEC_A: instructions.dec_r8(cpu, 'a'); break;
-        case alias.LD_A_D8: instructions.ld_r8_n(cpu, 'b'); break;
+        case alias.LD_A_D8: instructions.ld_r8_n(cpu, 'a'); break;
         case alias.CCF: instructions.ccf(cpu); break;
 
 

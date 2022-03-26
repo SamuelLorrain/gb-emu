@@ -116,27 +116,27 @@ export class Cpu {
 
     executeNext() {
         instructionsSet(this, this.prefetchedInstruction);
-        console.log("prefetch instruction : 0x" + this.prefetchedInstruction.toString(16));
         this.prefetchedInstruction = this.fetchNext();
     }
 
     pop() {
-        const addr = this.getRegister('pc');
+        const addr = this.getRegister('sp');
         const vl = this.mmapper.getUint8(addr);
-        this.setRegister('pc', addr + 1);
+        this.setRegister('sp', addr + 1);
         const vh = this.mmapper.getUint8(addr + 1);
-        this.setRegister('pc', addr + 2);
+        this.setRegister('sp', addr + 2);
         return (vh << 8) + vl;
     }
 
     push(v: number) {
+        console.log("0x" + v.toString(16));
         const vh = (v >> 8) & 0xff
         const vl = v & 0xff;
-        const addr = this.getRegister('pc');
-        this.setRegister('pc', addr - 1);
-        this.mmapper.setUint8(this.getRegister('pc'), vh);
-        this.setRegister('pc', (addr - 2));
-        this.mmapper.setUint8(this.getRegister('pc'), vl);
+        const addr = this.getRegister('sp');
+        this.setRegister('sp', addr - 1);
+        this.mmapper.setUint8(this.getRegister('sp'), vh);
+        this.setRegister('sp', (addr - 2));
+        this.mmapper.setUint8(this.getRegister('sp'), vl);
     }
 
     disableInterruptNext() {

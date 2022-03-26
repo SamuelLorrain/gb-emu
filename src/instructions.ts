@@ -874,6 +874,7 @@ export const call_a16 = function(cpu: Cpu) {
     const vl = cpu.fetchNext();;
     const vh = cpu.fetchNext();;
     const addr = (vh << 8) + vl;
+    console.log("addr: " + addr.toString(16));
     cpu.push(cpu.getRegister('pc') + 1);
     cpu.setRegister('pc', addr);
 }
@@ -953,17 +954,17 @@ export const reti = function(cpu: Cpu) {
 }
 
 export const ldh_ref_d8_r8 = function(cpu: Cpu, r8:string) {
-    const addr = 0xff + cpu.fetchNext();
+    const addr = 0xff00 + cpu.fetchNext();
     cpu.mmapper.setUint8(addr, cpu.getRegister(r8));
 }
 
 export const ldh_r8_ref_d8 = function(cpu: Cpu, r8:string) {
-    const addr = 0xff + cpu.fetchNext();
+    const addr = 0xff00 + cpu.fetchNext();
     cpu.setRegister(r8, cpu.mmapper.getUint8(addr));
 }
 
 export const ld_ref_c_r8 = function(cpu: Cpu, r8:string) {
-    const addr = 0xff + cpu.getRegister('c');
+    const addr = 0xff00 + cpu.getRegister('c');
     cpu.mmapper.setUint8(addr, cpu.getRegister(r8));
 }
 
