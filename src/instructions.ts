@@ -369,8 +369,8 @@ export const jr_nz_r8 = function(cpu: Cpu) {
         cpu.fetchNext();
         return;
     }
-    let addr = cpu.getRegister('pc');
-    addr += helpers.to_signed_i8(cpu.fetchNext()); // TODO wrapping add
+    const offset = helpers.to_signed_i8(cpu.fetchNext());
+    let addr = cpu.getRegister('pc') + offset;
     cpu.setRegister('pc', addr);
 }
 

@@ -8,12 +8,14 @@ export class Cpu {
     registerMap: RegisterMap;
     ime: boolean;
     interrupt: boolean;
+    prefetchedInstruction: number;
 
     constructor(mmapper: MemoryMapper, registerMap: RegisterMap) {
         this.mmapper = mmapper;
         this.registerMap = registerMap;
         this.ime = false; // interrupt master enable
         this.interrupt = false;
+        this.prefetchedInstruction = this.mmapper.getUint8(0x0);
     }
 
     debugReg() {
@@ -100,15 +102,22 @@ export class Cpu {
         return (flagRegister & 0b00010000) >> 4;
     }
 
-    fetchNext(): number {
+    fetchCurrent(): number {
         const pcValue = this.registerMap.getRegister('pc' as keyof Object);
         const instruction = this.mmapper.getUint8(pcValue);
-        this.registerMap.setRegister('pc' as keyof Object, pcValue + 1);
         return instruction;
     }
 
+    fetchNext(): number {
+        const pcValue = this.registerMap.getRegister('pc' as keyof Object);
+        this.registerMap.setRegister('pc' as keyof Object, pcValue + 1);
+        return this.mmapper.getUint8(pcValue + 1);
+    }
+
     executeNext() {
-        instructionsSet(this, this.fetchNext());
+        instructionsSet(this, this.prefetchedInstruction);
+        console.log("prefetch instruction : 0x" + this.prefetchedInstruction.toString(16));
+        this.prefetchedInstruction = this.fetchNext();
     }
 
     pop() {

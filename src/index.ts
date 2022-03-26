@@ -4,6 +4,8 @@ import { createMemory } from './ram';
 import { MemoryMapper } from './memorymapper';
 import content from '!!raw-loader!../tests_roms/DMG_ROM.b64';
 import { decode as b64decode } from 'base64-arraybuffer';
+import * as h from './helpers';
+
 const testRom = new Uint8Array(b64decode(content));
 
 let bootRom = createMemory(0x100);
@@ -21,11 +23,17 @@ for(const [index, byte] of testRom.entries()) {
 let cpu = new Cpu(mm, new GBRegisters());
 
 cpu.executeNext(); // LD SP,$fffe
-cpu.executeNext(); // XOR A
-cpu.executeNext(); // LD HL,$9fff
-cpu.executeNext(); // LD (HL-),A
-cpu.executeNext(); // BIT 7,H
-cpu.executeNext(); // JR // pb ici
 cpu.debugReg();
-// cpu.debugMemory(0x0, 30);
+cpu.executeNext(); // XOR A
+cpu.debugReg();
+cpu.executeNext(); // LD HL,$9FFF
+cpu.debugReg();
+cpu.executeNext(); // LD (HL-), A
+cpu.debugReg();
+cpu.executeNext(); // BIT 7,H
+cpu.debugReg();
+cpu.executeNext(); // JR, NZ, Addr__0007
+cpu.debugReg();
+cpu.executeNext(); // (LOOP to 0x7)
+cpu.debugReg();
 
