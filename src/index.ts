@@ -24,7 +24,7 @@ cpu.executeNext(); // LD SP,$fffe
 cpu.executeNext(); // XOR A
 cpu.executeNext(); // LD HL,$9fff
 cpu.executeNext(); // LD (HL-),A
-cpu.executeNext(); // BIT 7,H // PB ICI
+cpu.executeNext(); // BIT 7,H
 cpu.executeNext(); // JR // pb ici
 cpu.debugReg();
 // cpu.debugMemory(0x0, 30);

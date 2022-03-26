@@ -1226,7 +1226,11 @@ export const srl_ref_r16 = function(cpu: Cpu, r16: string) {
 export const bit_x_r8 = function(cpu: Cpu, x: number, r8: string) {
     cpu.setNFlag(0);
     cpu.setHFlag(1);
-    cpu.setZFlag((cpu.getRegister(r8) & (1 << x)) as 0|1);
+    if ((cpu.getRegister(r8) & (1 << x)) == 0) {
+        cpu.setZFlag(1);
+    } else {
+        cpu.setZFlag(0);
+    }
 }
 
 export const bit_x_ref_r16 = function(cpu: Cpu, x: number, r16: string) {
