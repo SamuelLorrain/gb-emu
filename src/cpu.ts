@@ -129,7 +129,6 @@ export class Cpu {
     }
 
     push(v: number) {
-        console.log("0x" + v.toString(16));
         const vh = (v >> 8) & 0xff
         const vl = v & 0xff;
         const addr = this.getRegister('sp');

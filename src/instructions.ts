@@ -82,10 +82,10 @@ export const dec_r8 = function(cpu: Cpu, reg: string) {
     } else {
         newV = v - 1;
     }
-    if (v == 0) {
+    if (newV == 0) {
         cpu.setZFlag(1);
     }
-    if ((newV & 0xf) === 0) {
+    if ((newV & 0xf) === 0) { // NOT SURE!
         cpu.setHFlag(1);
     }
     cpu.setRegister(reg, newV);
@@ -359,8 +359,8 @@ export const add_r16_r16 = function(cpu: Cpu, r1: string, r2: string) {
 }
 
 export const jr_r8 = function(cpu: Cpu) {
-    let addr = cpu.getRegister('pc');
-    addr += cpu.fetchNext();
+    const offset = helpers.to_signed_i8(cpu.fetchNext());
+    const addr = cpu.getRegister('pc') + offset;
     cpu.setRegister('pc', addr);
 }
 
@@ -370,7 +370,7 @@ export const jr_nz_r8 = function(cpu: Cpu) {
         return;
     }
     const offset = helpers.to_signed_i8(cpu.fetchNext());
-    let addr = cpu.getRegister('pc') + offset;
+    const addr = cpu.getRegister('pc') + offset;
     cpu.setRegister('pc', addr);
 }
 
@@ -379,10 +379,31 @@ export const jr_z_r8 = function(cpu: Cpu) {
         cpu.fetchNext();
         return;
     }
-    let addr = cpu.getRegister('pc');
-    addr += cpu.fetchNext();
+    const offset = helpers.to_signed_i8(cpu.fetchNext());
+    const addr = cpu.getRegister('pc') + offset;
     cpu.setRegister('pc', addr);
 }
+
+export const jr_nc_r8 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 1) {
+        cpu.fetchNext();
+        return;
+    }
+    const offset = helpers.to_signed_i8(cpu.fetchNext());
+    const addr = cpu.getRegister('pc') + offset;
+    cpu.setRegister('pc', addr);
+}
+
+export const jr_c_r8 = function(cpu: Cpu) {
+    if (cpu.getCFlag() == 0) {
+        cpu.fetchNext();
+        return;
+    }
+    const offset = helpers.to_signed_i8(cpu.fetchNext());
+    const addr = cpu.getRegister('pc') + offset;
+    cpu.setRegister('pc', addr);
+}
+
 
 export const daa = function(cpu: Cpu) {
     // found on the internet
@@ -460,26 +481,6 @@ export const cpl = function(cpu: Cpu, r8: string) {
     cpu.setRegister(r8, ~cpu.getRegister(r8));
     cpu.setNFlag(1);
     cpu.setHFlag(1);
-}
-
-export const jr_nc_r8 = function(cpu: Cpu) {
-    if (cpu.getCFlag() == 1) {
-        cpu.fetchNext();
-        return;
-    }
-    let addr = cpu.getRegister('pc');
-    addr += cpu.fetchNext();
-    cpu.setRegister('pc', addr);
-}
-
-export const jr_c_r8 = function(cpu: Cpu) {
-    if (cpu.getCFlag() == 0) {
-        cpu.fetchNext();
-        return;
-    }
-    let addr = cpu.getRegister('pc');
-    addr += cpu.fetchNext();
-    cpu.setRegister('pc', addr);
 }
 
 export const inc_ref_r16 = function(cpu: Cpu, r16: string) {
@@ -769,7 +770,8 @@ export const ret_c = function(cpu: Cpu) {
 }
 
 export const ret = function(cpu: Cpu) {
-    cpu.setRegister('pc', cpu.pop());
+    const addr = cpu.pop();
+    cpu.setRegister('pc', addr - 1);
 }
 
 export const pop_r16 = function(cpu: Cpu, r16: string) {
@@ -874,9 +876,8 @@ export const call_a16 = function(cpu: Cpu) {
     const vl = cpu.fetchNext();;
     const vh = cpu.fetchNext();;
     const addr = (vh << 8) + vl;
-    console.log("addr: " + addr.toString(16));
     cpu.push(cpu.getRegister('pc') + 1);
-    cpu.setRegister('pc', addr);
+    cpu.setRegister('pc', addr - 1);
 }
 
 export const push_r16 = function(cpu: Cpu, r16: string) {
