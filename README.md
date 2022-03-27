@@ -1,7 +1,7 @@
 # gb-emu
 
 A typescript game boy emulator,
-it's a wip
+it's a really early stage wip
 
 # TODO
 
