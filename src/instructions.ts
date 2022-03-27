@@ -263,7 +263,9 @@ export const ld_r8_ref_c = function(cpu: Cpu, r8: string) {
 }
 
 export const ld_ref_d16_r8 = function(cpu: Cpu, r8: string) {
-    const addr = (cpu.fetchNext() << 8) + cpu.fetchNext();
+    const vl = cpu.fetchNext();
+    const vh = cpu.fetchNext();
+    const addr = (vh << 8) + vl;
     const value = cpu.getRegister(r8);
     cpu.mmapper.setUint8(addr, value);
 }
