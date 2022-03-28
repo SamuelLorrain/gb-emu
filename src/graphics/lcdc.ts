@@ -1,13 +1,15 @@
-import { MemoryMapper } from "./memorymapper";
+import { MemoryMapper } from "../memorymapper";
+import { PpuRegister } from "./ppuRegister";
 
 export enum ObjSize {
     Small,
     Big
 }
 
-export class Lcdc {
+export class Lcdc implements PpuRegister {
     value: number = 0;
     mmu: MemoryMapper;
+    regIndex: number = 0Xff40;
 
     constructor(mmu: MemoryMapper) {
         this.mmu = mmu;
@@ -56,6 +58,7 @@ export class Lcdc {
             false;
     }
 
+    // result differ on DMG and CGB
     BgAndWindowPriority() {
         return (this.value & 0b1) ?
             true :
