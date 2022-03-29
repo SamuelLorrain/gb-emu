@@ -12,6 +12,8 @@ interface DeviceMap {
     endianness: boolean
 }
 
+// TODO mask somes addresses
+// at some times (see lcd status states)
 export class MemoryMapper {
     mapping: Array<DeviceMap>;
 

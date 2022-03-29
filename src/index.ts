@@ -3,6 +3,7 @@ import { Cpu } from './cpu';
 import { createMemory } from './ram';
 import { MemoryMapper } from './memorymapper';
 import testRom from '../tests_roms/dmg_rom';
+import { Ppu } from './graphics/ppu';
 
 let bootRom = createMemory(0x100);
 let memory = createMemory(0xFFFF);
@@ -18,14 +19,17 @@ for(const [index, byte] of testRom().entries()) {
 }
 
 let cpu = new Cpu(mm, new GBRegisters());
+let ppu = new Ppu(mm);
 
 // "wait for screen frame"
 while(cpu.getRegister('pc') != 0x64) {
     cpu.executeNext();
+    ppu.tick();
+    // ppu.debug();
 }
-cpu.debugReg();
-cpu.debugFlags();
-cpu.debugMemory(0xff42);
-cpu.debugMemory(0xff40); // lcdc register
-cpu.debugMemory(0xff44); // lcdc y-coordinate
+// cpu.debugReg();
+// cpu.debugFlags();
+// cpu.debugMemory(0xff42);
+// cpu.debugMemory(0xff40); // lcdc register
+// cpu.debugMemory(0xff44); // lcdc y-coordinate
 
