@@ -11,5 +11,5 @@
 */
 export type FrameBuffer = Uint16Array;
 
-export const SIZE_X = 160;
-export const SIZE_Y = 140;
+export const MAP_SIZE_X = 256;
+export const MAP_SIZE_Y = 256;

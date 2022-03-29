@@ -19,10 +19,11 @@ export class Ppu {
     lcdc: Lcdc;
     onOff: boolean;
     frameBuffer: FrameBuffer;
+    screen: any
 
     // vram (8kb)
     // oam ram (160b)
-    constructor(mmu: MemoryMapper, frameBuffer: FrameBuffer) {
+    constructor(mmu: MemoryMapper, frameBuffer: FrameBuffer, screen: any) {
         this.state = new LcdStatus(mmu);
         this.ly = 0;
         this.ticks = 0;
@@ -32,7 +33,9 @@ export class Ppu {
         this.lcdc = new Lcdc(mmu);
         this.onOff = false;
         this.frameBuffer = frameBuffer;
+        this.screen = screen;
     }
+
 
     getState(): ppuState {
         return this.state.getPpuStatus();
@@ -43,7 +46,6 @@ export class Ppu {
     }
 
     tick() {
-
         if (!this.lcdc.isLCDAndPpuEnabled()) {
             if (this.onOff) {
                 this.onOff = false;
@@ -80,6 +82,8 @@ export class Ppu {
                     return
                 }
                 const pixel = this.fetcher.fifo.deque();
+                if (pixel != 0) {
+                }
                 this.frameBuffer[this.ly * this.pixelDrawnsOnCurrentLine + 1] = pixel;
 
                 this.pixelDrawnsOnCurrentLine += 1;
@@ -106,6 +110,7 @@ export class Ppu {
                     this.ly += 1;
                     if (this.ly == 153) {
                         this.ly = 0;
+                        this.updateScreen();
                         this.state.setPpuStatus("oamsearch");
                     }
                 }
@@ -119,5 +124,9 @@ export class Ppu {
         console.log("ly : " + this.ly);
         console.log("ticks : " + this.ticks);
         console.log("xDrawns : " + this.pixelDrawnsOnCurrentLine);
+    }
+
+    updateScreen() {
+        this.screen.update(this.frameBuffer);
     }
 }
