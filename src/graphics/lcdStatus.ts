@@ -9,6 +9,7 @@ export class LcdStatus implements PpuRegister {
 
     constructor(mmu: MemoryMapper) {
         this.mmu = mmu;
+        this.update();
     }
 
     update() {
@@ -16,7 +17,7 @@ export class LcdStatus implements PpuRegister {
     }
 
     getPpuStatus(): ppuState {
-        const x = (this.value >> 6 & 0b11);
+        const x = (this.value & 0b11);
         switch (x) {
             case 0: return "hblank";
             case 1: return "vblank";
@@ -27,23 +28,23 @@ export class LcdStatus implements PpuRegister {
     }
 
     setPpuStatus(state: ppuState) {
-        let newValue = this.value
+        let newValue = (this.value & 0b11111100);
         switch (state) {
             case "hblank":
-                newValue &= 0b11111100;
+                newValue |= 0x0;
                 break;
             case "vblank":
-                newValue &= 0b11111101;
+                newValue |= 0x1;
                 break;
             case "oamsearch":
-                newValue &= 0b11111110;
+                newValue |= 0x2;
                 break;
             case "pixeltransfer":
-                newValue &= 0b11111111;
+                newValue |= 0x3;
                 break;
             default: throw new Error("Impossible state");
         }
-        this.mmu.setUint8(this.regIndex,newValue);
+        this.mmu.setUint8(this.regIndex, newValue);
         this.value = newValue;
     }
 

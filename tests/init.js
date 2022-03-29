@@ -2,6 +2,24 @@ import { MemoryMapper } from '../src/memorymapper';
 import { Cpu } from '../src/cpu';
 import { GBRegisters } from '../src/registers';
 import { createMemory } from '../src/ram';
+import { LcdStatus } from '../src/graphics/lcdStatus';
+
+
+export const makeLcdStatus = () => {
+    let ram = createMemory(0xFFFF);
+    let vram = createMemory(0x2000);
+    let mm = new MemoryMapper();
+    mm.map(0, 0xffff, ram);
+    mm.map(0x8000, 0xa000, vram);
+    let lcdStatus = new LcdStatus(mm);
+    return {
+        ram,
+        vram,
+        mm,
+        lcdStatus
+    }
+
+}
 
 export const makeTestGB = () => {
     let ram = createMemory(0xFFFF);
