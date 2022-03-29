@@ -1,5 +1,4 @@
 import { MemoryMapper } from '../memorymapper';
-import { FrameBuffer } from './frameBuffer';
 
 type PixelFetcherState = "ReadTileId"|"ReadTile0"|"ReadTile1"|"PushToFifo";
 const TILE_DATA_SIZE = 8;
@@ -11,16 +10,14 @@ export class PixelFetcher {
     currentTileAddr: number = 0;
     mmu: MemoryMapper;
     fifo: PixelFIFO;
-    frameBuffer: FrameBuffer;
     state: PixelFetcherState = "ReadTileId";
     Ntick: number = 0;
     tileIndex: number = 0;
     tileData: Uint8Array;
 
-    constructor(mmu : MemoryMapper, frameBuffer: FrameBuffer) {
+    constructor(mmu : MemoryMapper) {
         this.fifo = new PixelFIFO(); // may be injected instead
         this.mmu = mmu;
-        this.frameBuffer = frameBuffer;
         this.tileData = new Uint8Array(TILE_DATA_SIZE);
     }
 
@@ -52,8 +49,10 @@ export class PixelFetcher {
                 this.tileIndex += 1;
                 this.state = 'PushToFifo';
                 break;
-            default:
+            case "PushToFifo":
                 this.pushToFifo();
+                break;
+            default:
                 throw new Error("Something very bad happened");
         }
     }
