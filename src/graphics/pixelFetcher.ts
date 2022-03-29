@@ -1,4 +1,5 @@
-import { MemoryMapper } from "../memorymapper";
+import { MemoryMapper } from '../memorymapper';
+import { FrameBuffer } from './frameBuffer';
 
 export class PixelFetcher {
     currentMapAddr: number = 0;
@@ -8,10 +9,12 @@ export class PixelFetcher {
     currentTileAddr: number = 0;
     mmu: MemoryMapper;
     fifo: PixelFIFO;
+    frameBuffer: FrameBuffer;
 
-    constructor(mmu : MemoryMapper) {
+    constructor(mmu : MemoryMapper, frameBuffer: FrameBuffer) {
         this.fifo = new PixelFIFO(); // may be injected instead
         this.mmu = mmu;
+        this.frameBuffer = frameBuffer;
     }
 
     runForLine(mapAddr: number, line: number) {

@@ -15,7 +15,6 @@ export class Ppu {
     mmu: MemoryMapper;
     fetcher: PixelFetcher;
 
-
     // vram (8kb)
     // oam ram (160b)
     constructor(mmu: MemoryMapper) {
