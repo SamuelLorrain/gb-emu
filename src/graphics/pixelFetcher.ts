@@ -1,6 +1,8 @@
 import { MemoryMapper } from '../memorymapper';
 import { FrameBuffer } from './frameBuffer';
 
+type PixelFetcherState = "ReadTileId"|"ReadTile0"|"ReadTile1"|"PushToFifo";
+const TILE_DATA_SIZE = 8;
 export class PixelFetcher {
     currentMapAddr: number = 0;
     currentLine: number = 0;
@@ -10,27 +12,73 @@ export class PixelFetcher {
     mmu: MemoryMapper;
     fifo: PixelFIFO;
     frameBuffer: FrameBuffer;
+    state: PixelFetcherState = "ReadTileId";
+    Ntick: number = 0;
+    tileIndex: number = 0;
+    tileData: Uint8Array;
 
     constructor(mmu : MemoryMapper, frameBuffer: FrameBuffer) {
         this.fifo = new PixelFIFO(); // may be injected instead
         this.mmu = mmu;
         this.frameBuffer = frameBuffer;
+        this.tileData = new Uint8Array(TILE_DATA_SIZE);
     }
 
-    runForLine(mapAddr: number, line: number) {
+    initForLine(mapAddr: number, line: number) {
+        this.tileIndex = 0;
         this.currentMapAddr = mapAddr;
         this.currentLine = line;
-        this.currentTileAddr = this.currentMapAddr + this.currentLine;
-
+        this.state = "ReadTileId";
         this.fifo.clear();
     }
 
-    readHigh() {
-        this.currentTileHigh = this.mmu.getUint8(this.currentTileAddr);
+    tick() {
+        this.Ntick+=1;
+        if (this.Ntick < 2) {
+            return
+        }
+        this.Ntick = 0;
+        switch (this.state) {
+            case "ReadTileId":
+                this.currentTileAddr = this.mmu.getUint8(this.currentMapAddr + this.tileIndex);
+                this.state = 'ReadTile0';
+                break;
+            case "ReadTile0":
+                this.readTileLine(0);
+                this.state = 'ReadTile1';
+                break;
+            case "ReadTile1":
+                this.readTileLine(1);
+                this.tileIndex += 1;
+                this.state = 'PushToFifo';
+                break;
+            default:
+                this.pushToFifo();
+                throw new Error("Something very bad happened");
+        }
     }
 
-    readLow() {
-        this.currentTileLow = this.mmu.getUint8(this.currentTileAddr + 1);
+    readTileLine(bitPlane:  0|1) {
+        const offset = 0x8000 + (this.tileIndex * 16);
+        const addr = offset + (this.currentLine * 2);
+        const pixelData = this.mmu.getUint8(addr + bitPlane);
+        for(let i = 0; i < 8; i++) {
+            if (bitPlane == 0) {
+                this.tileData[i] = (pixelData >> i) & 0b1;
+            } else {
+                this.tileData[i] |= ((pixelData >> i) & 0b1) << 1;
+            }
+        }
+    }
+
+    pushToFifo() {
+        if (this.fifo.length() <= 8) {
+            for(let i = 7; i >= 0; i--) {
+                this.fifo.enqueue(this.tileData[i]);
+            }
+            this.tileIndex += 1;
+            this.state = "ReadTileId";
+        }
     }
 }
 

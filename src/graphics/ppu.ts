@@ -2,6 +2,7 @@ import { MemoryMapper } from '../memorymapper';
 import { LcdStatus } from './lcdStatus';
 import { PixelFetcher } from './pixelFetcher';
 import { ppuState } from './ppuRegister';
+import { FrameBuffer } from './frameBuffer';
 
 /**
 * Heavily inspired by : https://blog.tigris.fr/2019/09/15/writing-an-emulator-the-first-pixel/
@@ -17,13 +18,13 @@ export class Ppu {
 
     // vram (8kb)
     // oam ram (160b)
-    constructor(mmu: MemoryMapper) {
+    constructor(mmu: MemoryMapper, frameBuffer: FrameBuffer) {
         this.state = new LcdStatus(mmu);
         this.ly = 0;
         this.ticks = 0;
         this.mmu = mmu;
         this.pixelDrawnsOnCurrentLine = 0;
-        this.fetcher = new PixelFetcher(this.mmu);
+        this.fetcher = new PixelFetcher(this.mmu, frameBuffer);
     }
 
     getState(): ppuState {
@@ -38,6 +39,10 @@ export class Ppu {
                 // SCAN oam (object attribute memory)
                 // from 0xfe00 to 0xfe9f to mix sprit pixels in the current line later
                 if (this.ticks == 20) {
+                    this.pixelDrawnsOnCurrentLine = 0;
+                    const tileLine = this.ly % 8;
+                    const tileMapRowAddr = (0x9800 + (Math.floor(this.ly/8)) * 32);
+                    this.fetcher.initForLine(tileMapRowAddr, tileLine);
                     this.state.setPpuStatus("pixeltransfer");
                     this.debug();
                 }
