@@ -20,11 +20,6 @@ export class Lcdc implements PpuRegister {
         this.value = this.mmu.getUint8(0xff40);
     }
 
-    disable() {
-        this.value = this.value & 0b11111110;
-        this.update();
-    }
-
     isLCDAndPpuEnabled(): boolean {
         this.update();
         return ((this.value >> 7) & 0b1) ? true : false;

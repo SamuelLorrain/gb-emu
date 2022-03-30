@@ -39,10 +39,3 @@ for(;;) {
     }
 }
 console.log(frame);
-
-// cpu.debugReg();
-// cpu.debugFlags();
-// console.log(ppu.lcdc.isLCDAndPpuEnabled());
-// cpu.debugMemory(0xff40); // lcdc register
-// console.log((mm.getUint8(0xff40) >> 7) & 0b1 ? true : false);
-
