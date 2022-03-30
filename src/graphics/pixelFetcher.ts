@@ -7,7 +7,7 @@ export class PixelFetcher {
     currentLine: number = 0;
     currentTileLow: number =  0;
     currentTileHigh: number = 0;
-    currentTileAddr: number = 0;
+    currentTileId: number = 0;
     mmu: MemoryMapper;
     fifo: PixelFIFO;
     state: PixelFetcherState = "ReadTileId";
@@ -37,7 +37,7 @@ export class PixelFetcher {
         this.Ntick = 0;
         switch (this.state) {
             case "ReadTileId":
-                this.currentTileAddr = this.mmu.getUint8(this.currentMapAddr + this.tileIndex);
+                this.currentTileId = this.mmu.getUint8(this.currentMapAddr + this.tileIndex);
                 this.state = 'ReadTile0';
                 break;
             case "ReadTile0":
@@ -58,14 +58,14 @@ export class PixelFetcher {
     }
 
     readTileLine(bitPlane:  0|1) {
-        const offset = 0x8000 + (this.tileIndex * 16);
+        const offset = 0x8000 + (this.currentTileId * 16);
         const addr = offset + (this.currentLine * 2);
         const pixelData = this.mmu.getUint8(addr + bitPlane);
         for(let i = 0; i < 8; i++) {
             if (bitPlane == 0) {
                 this.tileData[i] = (pixelData >> i) & 0b1;
             } else {
-                this.tileData[i] |= ((pixelData >> i) & 0b1) << 1;
+                this.tileData[i] |= (((pixelData >> i) & 0b1) << 1);
             }
         }
     }

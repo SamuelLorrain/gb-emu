@@ -82,8 +82,6 @@ export class Ppu {
                     return
                 }
                 const pixel = this.fetcher.fifo.deque();
-                if (pixel != 0) {
-                }
                 this.frameBuffer[this.ly * this.pixelDrawnsOnCurrentLine + 1] = pixel;
 
                 this.pixelDrawnsOnCurrentLine += 1;
