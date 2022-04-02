@@ -78,11 +78,11 @@ export class Ppu {
                 break;
             case "pixeltransfer":
                 this.fetcher.tick();
-                if (this.fetcher.fifo.length() <= 8) {
+                if (this.fetcher.fifo.length() < 8) {
                     return
                 }
                 const pixel = this.fetcher.fifo.deque();
-                this.frameBuffer[this.ly * this.pixelDrawnsOnCurrentLine + 1] = pixel;
+                this.frameBuffer[(this.ly + 1) * this.pixelDrawnsOnCurrentLine] = pixel;
 
                 this.pixelDrawnsOnCurrentLine += 1;
                 if (this.pixelDrawnsOnCurrentLine == 160) {

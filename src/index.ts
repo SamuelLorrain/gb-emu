@@ -38,4 +38,3 @@ for(;;) {
         break;
     }
 }
-// console.log(frame);
