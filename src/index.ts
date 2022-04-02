@@ -5,7 +5,7 @@ import { MemoryMapper } from './memorymapper';
 import testRom from '../tests_roms/dmg_rom';
 import { Ppu } from './graphics/ppu';
 import { LCD_SIZE_X, LCD_SIZE_Y } from './graphics/frameBuffer';
-import { Screen } from './graphics/screen';
+import { Screen } from './replaced_modules/lcd.module_replaced';
 
 let bootRom = createMemory(0x100);
 let memory = createMemory(0xFFFF);

@@ -72,7 +72,7 @@ webConfig.plugins = [
         './view/debugScreenWeb.ts'
     ),
     new webpack.NormalModuleReplacementPlugin(
-        /.*graphicScreen.module_replaced$/,
+        /.*lcd.module_replaced$/,
         './view/graphicScreenWeb.ts'
     )
 ]
