@@ -13,8 +13,6 @@ it's a really early stage wip
 - sounds
 - gbc
 - use macro (sweet.js or bable_macros)
-  to simplify and improve code
-- testing
 - web ui (video in x2 x4 x8)
 - speed up emulator
 - save

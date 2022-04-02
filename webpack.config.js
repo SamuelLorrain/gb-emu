@@ -45,6 +45,10 @@ const nodeConfig = {
         new webpack.NormalModuleReplacementPlugin(
             /.*debugScreen.module_replaced$/,
             './view/debugScreenNode.ts'
+        ),
+        new webpack.NormalModuleReplacementPlugin(
+            /.*graphicScreen.module_replaced$/,
+            './view/graphicScreenNode.ts'
         )
     ]
 };
@@ -66,6 +70,10 @@ webConfig.plugins = [
     new webpack.NormalModuleReplacementPlugin(
         /.*debugScreen.module_replaced$/,
         './view/debugScreenWeb.ts'
+    ),
+    new webpack.NormalModuleReplacementPlugin(
+        /.*graphicScreen.module_replaced$/,
+        './view/graphicScreenWeb.ts'
     )
 ]
 
