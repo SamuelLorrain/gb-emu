@@ -1,4 +1,4 @@
-import { makePpu, putGraphicsInRam } from './init';
+import { makePpu, putGraphicsInRam, putTwoGraphicsInRam } from './init';
 
 test('putGraphicsInRam test function works as expected', function() {
     const ppu = makePpu();
@@ -63,20 +63,25 @@ test('ppu can add tile line to lcd', function() {
     for(let i = 0; i <= 21; i++) {
         ppu.ppu.tick();
     } // should have push a tile line to lcd (timing to confirm)
-    console.log(ppu.ppu.frameBuffer.slice(0,15));
+    expect(ppu.ppu.frameBuffer.slice(0,8)).toStrictEqual(Uint16Array.from([0,2,3,3,3,3,2,0]));
 });
 
 test('ppu can add second tile line (on the first lcd line pixel 8 through 16)', function() {
     const ppu = makePpu();
-    putGraphicsInRam(ppu.mm, 1);
+    putTwoGraphicsInRam(ppu.mm);
     ppu.mm.setUint8(0xff40, 0b10000000);
     ppu.ppu.onOff = true;
     ppu.ppu.ticks = 19;
     ppu.ppu.state.setPpuStatus("oamsearch");
     ppu.ppu.tick();
 
-    for(let i = 0; i <= 21; i++) {
+    for(let i = 0; i <= 70; i++) {
         ppu.ppu.tick();
-    } // should have push a tile line to lcd (timing to confirm)
-    console.log(ppu.ppu.frameBuffer.slice(0,15));
+    }
+    expect(ppu.ppu.frameBuffer.slice(0,16)).toStrictEqual(
+        Uint16Array.from([
+            0,2,3,3,3,3,2,0,
+            1,1,1,1,1,1,1,1
+        ])
+    );
 });

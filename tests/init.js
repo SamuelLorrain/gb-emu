@@ -33,6 +33,52 @@ export const putGraphicsInRam = (mmu, tileId = 1) => {
     }
 };
 
+// like putGraphicsInRam but with two
+// different tiles
+export const putTwoGraphicsInRam = (mmu) => {
+    const tileId1 = 1;
+    mmu.setUint16(0x8000 + (tileId1*16), 0x3c);
+    mmu.setUint16(0x8001 + (tileId1*16), 0x7e);
+    mmu.setUint16(0x8002 + (tileId1*16), 0x42);
+    mmu.setUint16(0x8003 + (tileId1*16), 0x42);
+    mmu.setUint16(0x8004 + (tileId1*16), 0x42);
+    mmu.setUint16(0x8005 + (tileId1*16), 0x42);
+    mmu.setUint16(0x8006 + (tileId1*16), 0x42);
+    mmu.setUint16(0x8007 + (tileId1*16), 0x42);
+    mmu.setUint16(0x8008 + (tileId1*16), 0x7e);
+    mmu.setUint16(0x8009 + (tileId1*16), 0x5e);
+    mmu.setUint16(0x800a + (tileId1*16), 0x7e);
+    mmu.setUint16(0x800b + (tileId1*16), 0x0a);
+    mmu.setUint16(0x800c + (tileId1*16), 0x7c);
+    mmu.setUint16(0x800d + (tileId1*16), 0x56);
+    mmu.setUint16(0x800e + (tileId1*16), 0x38);
+    mmu.setUint16(0x800f + (tileId1*16), 0x7c);
+
+    const tileId2 = 2;
+    mmu.setUint16(0x8000 + (tileId2*16), 0xff);
+    mmu.setUint16(0x8001 + (tileId2*16), 0x00);
+    mmu.setUint16(0x8002 + (tileId2*16), 0x7e);
+    mmu.setUint16(0x8003 + (tileId2*16), 0xff);
+    mmu.setUint16(0x8004 + (tileId2*16), 0x85);
+    mmu.setUint16(0x8005 + (tileId2*16), 0x81);
+    mmu.setUint16(0x8006 + (tileId2*16), 0x89);
+    mmu.setUint16(0x8007 + (tileId2*16), 0x83);
+    mmu.setUint16(0x8008 + (tileId2*16), 0x93);
+    mmu.setUint16(0x8009 + (tileId2*16), 0x85);
+    mmu.setUint16(0x800a + (tileId2*16), 0xa5);
+    mmu.setUint16(0x800b + (tileId2*16), 0x8b);
+    mmu.setUint16(0x800c + (tileId2*16), 0xc9);
+    mmu.setUint16(0x800d + (tileId2*16), 0x97);
+    mmu.setUint16(0x800e + (tileId2*16), 0x7e);
+    mmu.setUint16(0x800f + (tileId2*16), 0xff);
+
+    // tile map
+    for(let i = 0x9800; i <= 0x9bff; i+=2) {
+        mmu.setUint8(i, tileId1);
+        mmu.setUint8(i+1, tileId2);
+    }
+}
+
 export const makePpu = () => {
     let ram = createMemory(0xFFFF);
     let vram = createMemory(0x2000);

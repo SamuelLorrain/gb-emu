@@ -50,7 +50,10 @@ export class PixelFetcher {
                 this.state = 'PushToFifo';
                 break;
             case "PushToFifo":
-                this.pushToFifo();
+                if (this.fifo.length() <= 8) {
+                    this.pushToFifo();
+                    this.state = "ReadTileId";
+                }
                 break;
             default:
                 throw new Error("Something very bad happened");
@@ -71,12 +74,8 @@ export class PixelFetcher {
     }
 
     pushToFifo() {
-        if (this.fifo.length() <= 8) {
-            for(let i = 7; i >= 0; i--) {
-                this.fifo.enqueue(this.tileData[i]);
-            }
-            this.tileIndex += 1;
-            this.state = "ReadTileId";
+        for(let i = 7; i >= 0; i--) {
+            this.fifo.enqueue(this.tileData[i]);
         }
     }
 }

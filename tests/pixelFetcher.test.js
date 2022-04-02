@@ -30,7 +30,6 @@ test('can read tile line', function() {
     expect(pixelFetcher.pixelFetcher.tileData).toEqual(Uint8Array.from([0,2,3,3,3,3,2,0]));
 });
 
-// FIXME NOT SURE ABOUT THIS TEST
 test('can read second tile line', function() {
     const pixelFetcher = makePixelFetcher();
     putGraphicsInRam(pixelFetcher.mm);
