@@ -21,11 +21,11 @@ mm.map(0x0, 0x00ff, bootRom);
 for(const [index, byte] of testRom().entries()) {
     mm.setUint8(index, byte);
 }
-
 let cpu = new Cpu(mm, new GBRegisters());
 let ppu = new Ppu(mm, frame, screen);
 
-// "wait for screen frame"
+
+// "waiting for screen frame"
 while(cpu.getRegister('pc') != 0x64) {
     cpu.executeNext();
     ppu.tick();

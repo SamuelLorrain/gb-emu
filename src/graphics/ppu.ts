@@ -2,7 +2,7 @@ import { MemoryMapper } from '../memorymapper';
 import { LcdStatus } from './lcdStatus';
 import { PixelFetcher } from './pixelFetcher';
 import { ppuState } from './ppuRegister';
-import { FrameBuffer } from './frameBuffer';
+import { FrameBuffer, LCD_SIZE_X } from './frameBuffer';
 import { Lcdc } from './lcdc';
 
 /**
@@ -82,7 +82,7 @@ export class Ppu {
                     return
                 }
                 const pixel = this.fetcher.fifo.deque();
-                this.frameBuffer[(this.ly + 1) * this.pixelDrawnsOnCurrentLine] = pixel;
+                this.frameBuffer[(this.ly * LCD_SIZE_X) + this.pixelDrawnsOnCurrentLine] = pixel;
 
                 this.pixelDrawnsOnCurrentLine += 1;
                 if (this.pixelDrawnsOnCurrentLine == 160) {
