@@ -10,12 +10,16 @@ import { Screen } from './replaced_modules/lcd.module_replaced';
 let bootRom = createMemory(0x100);
 let memory = createMemory(0xFFFF);
 let vram = createMemory(0x2000);
+let rom = createMemory(0x8000 - 0x100);
 let mm = new MemoryMapper();
 let frame = new Uint16Array(LCD_SIZE_X*LCD_SIZE_Y);
 let screen = new Screen();
 mm.map(0, 0xffff, memory);
+mm.map(0x100, 0x7fff, rom);
 mm.map(0x8000, 0xa000, vram);
 mm.map(0x0, 0x00ff, bootRom);
+mm.enableDevice(rom, false); // deactivate rom access,
+                             // as we don't have any
 
 // load testrom
 for(const [index, byte] of testRom().entries()) {
@@ -23,7 +27,6 @@ for(const [index, byte] of testRom().entries()) {
 }
 let cpu = new Cpu(mm, new GBRegisters());
 let ppu = new Ppu(mm, frame, screen);
-
 
 // "waiting for screen frame"
 while(cpu.getRegister('pc') != 0x64) {
