@@ -1,3 +1,4 @@
+import { MemoryMapper } from "../memorymapper";
 
 /**
 *
@@ -5,6 +6,6 @@
 * webpack NormalModuleRemplacement plugin
 *
 */
-export const loadRom = () => {
+export const loadRom = (mm: MemoryMapper, romname: string = "rom.rom") => {
     throw new Error("FORBIDDEN MODULE");
 }

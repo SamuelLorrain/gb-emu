@@ -21,8 +21,8 @@ mm.map(0x8000, 0xa000, vram);
 mm.map(0x0, 0x00ff, bootRom);
 mm.enableDevice(rom, false); // deactivate rom access,
                              // as we don't have any
+loadRom(mm);
 
-console.log(loadRom);
 // load testrom
 for(const [index, byte] of testRom().entries()) {
     mm.setUint8(index, byte);
