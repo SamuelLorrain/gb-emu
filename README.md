@@ -6,7 +6,6 @@ it's a really early stage wip
 # TODO
 
 - timing
-- graphics
 - inputs
 - interrupts
 - memory banking (mbc1, mbc2, mbc3, ...)

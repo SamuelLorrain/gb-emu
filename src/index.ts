@@ -6,6 +6,7 @@ import testRom from '../tests_roms/dmg_rom';
 import { Ppu } from './graphics/ppu';
 import { LCD_SIZE_X, LCD_SIZE_Y } from './graphics/frameBuffer';
 import { Screen } from './replaced_modules/lcd.module_replaced';
+import { loadRom } from './replaced_modules/load_rom.module_replaced';
 
 let bootRom = createMemory(0x100);
 let memory = createMemory(0xFFFF);
@@ -21,6 +22,7 @@ mm.map(0x0, 0x00ff, bootRom);
 mm.enableDevice(rom, false); // deactivate rom access,
                              // as we don't have any
 
+console.log(loadRom);
 // load testrom
 for(const [index, byte] of testRom().entries()) {
     mm.setUint8(index, byte);

@@ -49,6 +49,10 @@ const nodeConfig = {
         new webpack.NormalModuleReplacementPlugin(
             /.*graphicScreen.module_replaced$/,
             './view/graphicScreenNode.ts'
+        ),
+        new webpack.NormalModuleReplacementPlugin(
+            /.*load_rom.module_replaced$/,
+            './helpers/loadNode.ts'
         )
     ]
 };
@@ -74,6 +78,10 @@ webConfig.plugins = [
     new webpack.NormalModuleReplacementPlugin(
         /.*lcd.module_replaced$/,
         './view/graphicScreenWeb.ts'
+    ),
+    new webpack.NormalModuleReplacementPlugin(
+        /.*load_rom.module_replaced$/,
+        './helpers/loadWeb.ts'
     )
 ]
 
