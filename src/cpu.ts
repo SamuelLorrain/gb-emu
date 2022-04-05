@@ -1,5 +1,5 @@
 import { RegisterMap } from './registers';
-import * as DebugScreen from './replaced_modules/debugScreen.module_replaced';
+import * as DebugScreen from './view/debugScreenWeb';
 import { MemoryMapper } from './memorymapper';
 import { instructionsSet } from './instructionsSet';
 

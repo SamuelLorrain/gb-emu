@@ -1,8 +1,11 @@
 import { MemoryMapper } from "../memorymapper";
 
-const innerLoadRom = (mm: MemoryMapper, file: FileList|null) => {
-    console.log(mm);
-    console.log(file);
+const innerLoadRom = async (mm: MemoryMapper, files: FileList|null) => {
+    if (!files || files.length == 0) {
+        console.error("unable to load file");
+        return null;
+    }
+    return await files[0].arrayBuffer();
 }
 
 /**

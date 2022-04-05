@@ -5,8 +5,7 @@ import { MemoryMapper } from './memorymapper';
 import testRom from '../tests_roms/dmg_rom';
 import { Ppu } from './graphics/ppu';
 import { LCD_SIZE_X, LCD_SIZE_Y } from './graphics/frameBuffer';
-import { Screen } from './replaced_modules/lcd.module_replaced';
-import { loadRom } from './replaced_modules/load_rom.module_replaced';
+import { Screen } from './view/graphicScreenWeb';
 
 let bootRom = createMemory(0x100);
 let memory = createMemory(0xFFFF);
@@ -20,8 +19,6 @@ mm.map(0x100, 0x7fff, rom);
 mm.map(0x8000, 0xa000, vram);
 mm.map(0x0, 0x00ff, bootRom);
 mm.enableDevice(rom, false); // deactivate rom access,
-                             // as we don't have any
-loadRom(mm);
 
 // load testrom
 for(const [index, byte] of testRom().entries()) {
