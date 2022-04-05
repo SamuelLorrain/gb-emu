@@ -33,10 +33,13 @@ while(cpu.getRegister('pc') != 0x64) {
     ppu.tick();
 }
 console.log("waiting for screen frame");
+let t: number = 0;
 for(;;) {
     cpu.executeNext();
     ppu.tick();
+    t++;
     if(cpu.getRegister('pc') > 0xe0) { // lock up
+        console.log(t);
         break;
     }
 }

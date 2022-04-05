@@ -47,5 +47,4 @@ export class LcdStatus implements PpuRegister {
         this.mmu.setUint8(this.regIndex, newValue);
         this.value = newValue;
     }
-
 }

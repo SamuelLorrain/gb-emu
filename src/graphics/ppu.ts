@@ -4,22 +4,27 @@ import { PixelFetcher } from './pixelFetcher';
 import { ppuState } from './ppuRegister';
 import { FrameBuffer, LCD_SIZE_X } from './frameBuffer';
 import { Lcdc } from './lcdc';
+import { ScrollX } from './scrollX';
+import { ScrollY } from './scrollY';
 
 /**
 * Heavily inspired by : https://blog.tigris.fr/2019/09/15/writing-an-emulator-the-first-pixel/
 * and : https://www.youtube.com/watch?v=HyzD8pNlpwI (ultimate gameboy talk)
 */
 export class Ppu {
-    state: LcdStatus;
     ly: number; // line y should be a register
     ticks: number;
     pixelDrawnsOnCurrentLine: number;
     mmu: MemoryMapper;
     fetcher: PixelFetcher;
-    lcdc: Lcdc;
     onOff: boolean;
     frameBuffer: FrameBuffer;
     screen: any
+
+    // registers
+    lcdc: Lcdc;
+    state: LcdStatus;
+    scroll: {x: ScrollX, y: ScrollY};
 
     // vram (8kb)
     // oam ram (160b)
@@ -28,6 +33,10 @@ export class Ppu {
         this.ly = 0;
         this.ticks = 0;
         this.mmu = mmu;
+        this.scroll = {
+            x: new ScrollX(this.mmu),
+            y: new ScrollY(this.mmu),
+        };
         this.pixelDrawnsOnCurrentLine = 0;
         this.fetcher = new PixelFetcher(this.mmu);
         this.lcdc = new Lcdc(mmu);
@@ -70,8 +79,10 @@ export class Ppu {
                 // from 0xfe00 to 0xfe9f to mix sprit pixels in the current line later
                 if (this.ticks == 20) {
                     this.pixelDrawnsOnCurrentLine = 0;
+                    this.scroll.y.update();
+                    const yDraw = this.scroll.y.value + this.ly;
                     const tileLine = this.ly % 8;
-                    const tileMapRowAddr = (0x9800 + (Math.floor(this.ly/8)) * 32);
+                    const tileMapRowAddr = (0x9800 + (Math.floor(yDraw/8)) * 32);
                     this.fetcher.initForLine(tileMapRowAddr, tileLine);
                     this.state.setPpuStatus("pixeltransfer");
                 }
