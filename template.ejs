@@ -4,12 +4,23 @@
     <meta charset="utf-8">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <style>
+        .body {
+            display: flex;
+            justify-content: start;
+        }
+
         #canvas {
             border: 1px solid black;
+            align-self: flex-start;
+        }
+
+        #interface {
+            border: 1px solid black;
+            align-self: stretch;
         }
     </style>
   </head>
-  <body>
+  <body class="body">
         <div id="screen">
             <canvas width=160 height=144 id="canvas">
             </canvas>
@@ -23,6 +34,11 @@
             </div>
             <div id="loadRom">
             </div>
+        </div>
+        <div>
+            <button id="run">Run</button>
+            <button id="step">Step</button>
+            <button id="stop">Stop</button>
         </div>
   </body>
 </html>

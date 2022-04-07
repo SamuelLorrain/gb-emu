@@ -6,6 +6,7 @@ import testRom from '../tests_roms/dmg_rom';
 import { Ppu } from './graphics/ppu';
 import { LCD_SIZE_X, LCD_SIZE_Y } from './graphics/frameBuffer';
 import { Screen } from './view/graphicScreenWeb';
+import { Interface as Gui } from './view/interface';
 
 let bootRom = createMemory(0x100);
 let memory = createMemory(0xFFFF);
@@ -26,6 +27,9 @@ for(const [index, byte] of testRom().entries()) {
 }
 let cpu = new Cpu(mm, new GBRegisters());
 let ppu = new Ppu(mm, frame, screen);
+
+
+let gui = new Gui(cpu, ppu);
 
 // "waiting for screen frame"
 // while(cpu.getRegister('pc') != 0x64) {
