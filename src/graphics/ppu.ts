@@ -136,11 +136,6 @@ export class Ppu {
     }
 
     updateScreen() {
-        if (this.getState() === 'vblank'
-            && this.ticks === 456
-            && this.ly === 153) {
-
-            this.screen.update(this.frameBuffer);
-        }
+        this.screen.update(this.frameBuffer);
     }
 }
