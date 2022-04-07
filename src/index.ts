@@ -28,19 +28,19 @@ let cpu = new Cpu(mm, new GBRegisters());
 let ppu = new Ppu(mm, frame, screen);
 
 // "waiting for screen frame"
-while(cpu.getRegister('pc') != 0x64) {
-    cpu.executeNext();
-    ppu.tick();
-}
-console.log("waiting for screen frame");
-for(;;) {
-    cpu.executeNext();
-    ppu.tick();
-    if(cpu.getRegister('pc') > 0xe0) { // lock up
-        break;
-    }
-}
-// // 2885483 ticks
+// while(cpu.getRegister('pc') != 0x64) {
+//     cpu.executeNext();
+//     ppu.tick();
+// }
+// console.log("waiting for screen frame");
+// for(;;) {
+//     cpu.executeNext();
+//     ppu.tick();
+//     if(cpu.getRegister('pc') > 0xe0) { // lock up
+//         break;
+//     }
+// }
+// // 2 885 483 ticks
 // console.log(t);
 
 // const t = new Timing(u, 1/1000000);
