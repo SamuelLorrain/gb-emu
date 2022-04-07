@@ -37,10 +37,7 @@ export class Timing {
         while (deltaT < this.framerate) {
             deltaT = (performance.now() - this.last) / 1000;
         }
-
         this.update(this);
-        this.render(this);
-
         this.last = currentTime;
         this.frameId = requestAnimationFrame(this.onFrame);
     }

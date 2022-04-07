@@ -119,6 +119,7 @@ export class Ppu {
                     this.ly += 1;
                     if (this.ly == 153) {
                         this.ly = 0;
+                        this.updateScreen();
                         this.state.setPpuStatus("oamsearch");
                     }
                 }
