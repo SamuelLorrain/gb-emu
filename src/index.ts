@@ -6,6 +6,7 @@ import testRom from '../tests_roms/dmg_rom';
 import { Ppu } from './graphics/ppu';
 import { LCD_SIZE_X, LCD_SIZE_Y } from './graphics/frameBuffer';
 import { Screen } from './view/graphicScreenWeb';
+import { Timing } from './timing';
 
 let bootRom = createMemory(0x100);
 let memory = createMemory(0xFFFF);
@@ -28,18 +29,32 @@ let cpu = new Cpu(mm, new GBRegisters());
 let ppu = new Ppu(mm, frame, screen);
 
 // "waiting for screen frame"
-while(cpu.getRegister('pc') != 0x64) {
+// while(cpu.getRegister('pc') != 0x64) {
+//     cpu.executeNext();
+//     ppu.tick();
+// }
+// console.log("waiting for screen frame");
+// for(;;) {
+//     cpu.executeNext();
+//     ppu.tick();
+//     ppu.updateScreen(); // maybe screen.update() instead ?
+//     if(cpu.getRegister('pc') > 0xe0) { // lock up
+//         t.stop();
+//     }
+// }
+
+
+const u = (t: Timing) => {
+    console.log("update");
     cpu.executeNext();
     ppu.tick();
-}
-console.log("waiting for screen frame");
-let t: number = 0;
-for(;;) {
-    cpu.executeNext();
-    ppu.tick();
-    t++;
     if(cpu.getRegister('pc') > 0xe0) { // lock up
-        console.log(t);
-        break;
+        t.stop();
     }
 }
+const r = (t: Timing) => {
+    console.log("render");
+     ppu.updateScreen(); // maybe screen.update() instead ?
+}
+const t = new Timing(u, r, 1/60000);
+t.start();

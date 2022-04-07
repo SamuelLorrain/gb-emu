@@ -119,7 +119,6 @@ export class Ppu {
                     this.ly += 1;
                     if (this.ly == 153) {
                         this.ly = 0;
-                        this.updateScreen();
                         this.state.setPpuStatus("oamsearch");
                     }
                 }
@@ -136,6 +135,11 @@ export class Ppu {
     }
 
     updateScreen() {
-        this.screen.update(this.frameBuffer);
+        if (this.getState() === 'vblank'
+            && this.ticks === 456
+            && this.ly === 153) {
+
+            this.screen.update(this.frameBuffer);
+        }
     }
 }
