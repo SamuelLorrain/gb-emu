@@ -75,14 +75,18 @@ test('can set registers', function() {
     expect(gb.cpu.getRegister('pc')).toBe(1);
 });
 
-test('can fetchNext() instruction', function() {
+test('can fetchCurrent() instruction', function() {
     const gb = makeTestGB();
     gb.ram.setUint8(0x0, 0xFF);
+    expect(gb.cpu.fetchCurrent()).toBe(0xFF);
+    expect(gb.cpu.getRegister('pc')).toBe(0x0);
+});
+
+test('can fetchNext() instruction', function() {
+    const gb = makeTestGB();
     gb.ram.setUint8(0x1, 0xAA);
-    expect(gb.cpu.fetchNext()).toBe(0xFF);
-    expect(gb.cpu.getRegister('pc')).toBe(0x1);
     expect(gb.cpu.fetchNext()).toBe(0xAA);
-    expect(gb.cpu.getRegister('pc')).toBe(0x2);
+    expect(gb.cpu.getRegister('pc')).toBe(0x1);
 });
 
 test('can execute instruction', function() {
@@ -157,19 +161,19 @@ test('can set carry flag without touching others', function() {
 
 test('can push', function() {
     const gb = makeTestGB();
-    gb.cpu.setRegister('pc', 0xff);
+    gb.cpu.setRegister('sp', 0xff);
     gb.cpu.push(0xabcd);
-    expect(gb.cpu.getRegister('pc')).toBe(0xfd);
+    expect(gb.cpu.getRegister('sp')).toBe(0xfd);
     expect(gb.mm.getUint8(0xfe)).toBe(0xab);
     expect(gb.mm.getUint8(0xfd)).toBe(0xcd);
 });
 
 test('can pop', function() {
     const gb = makeTestGB();
-    gb.cpu.setRegister('pc', 0xfd);
+    gb.cpu.setRegister('sp', 0xfd);
     gb.mm.setUint8(0xfe, 0xab);
     gb.mm.setUint8(0xfd, 0xcd);
     const v = gb.cpu.pop();
     expect(v).toBe(0xabcd);
-    expect(gb.cpu.getRegister('pc')).toBe(0xff);
+    expect(gb.cpu.getRegister('sp')).toBe(0xff);
 });

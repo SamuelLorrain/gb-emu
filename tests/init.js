@@ -6,7 +6,7 @@ import { LcdStatus } from '../src/graphics/lcdStatus';
 import { Lcdc } from '../src/graphics/lcdc';
 import { PixelFetcher } from '../src/graphics/pixelFetcher';
 import { LCD_SIZE_X, LCD_SIZE_Y } from '../src/graphics/frameBuffer';
-import { Screen } from '../src/graphics/screen';
+import { Screen } from '../src/view/graphicScreenWeb';
 import { Ppu } from '../src/graphics/ppu';
 
 export const putGraphicsInRam = (mmu, tileId = 1) => {
