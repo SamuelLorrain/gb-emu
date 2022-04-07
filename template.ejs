@@ -4,28 +4,25 @@
     <meta charset="utf-8">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <style>
-        .body {
+        #screen {
             display: flex;
-            justify-content: start;
+            justify-content: center;
         }
-
         #canvas {
             border: 1px solid black;
-            align-self: flex-start;
         }
-
-        #interface {
-            border: 1px solid black;
-            align-self: stretch;
+        .interface {
+            display: flex;
+            justify-content: space-around;
         }
     </style>
   </head>
-  <body class="body">
+  <body>
         <div id="screen">
             <canvas width=160 height=144 id="canvas">
             </canvas>
         </div>
-        <div id="interface">
+        <div class="interface">
             <div id="registers">
             </div>
             <div id="memory">
@@ -34,11 +31,11 @@
             </div>
             <div id="loadRom">
             </div>
-        </div>
-        <div>
-            <button id="run">Run</button>
-            <button id="step">Step</button>
-            <button id="stop">Stop</button>
+            <div class="buttons">
+                <button id="run">Run</button>
+                <button id="step">Step</button>
+                <button id="stop">Stop</button>
+            </div>
         </div>
   </body>
 </html>

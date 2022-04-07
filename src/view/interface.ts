@@ -6,26 +6,24 @@ export class Interface {
     ppu: Ppu;
 
     // sorry
-    interface:any;
     registers:any;
     memory:any;
     flags:any;
     run:any;
     stop:any;
     step:any;
+    stopEvent: string|null = null;
 
     constructor(cpu: Cpu, ppu: Ppu) {
         this.cpu = cpu;
         this.ppu = ppu;
-        this.interface = document.getElementById("interface");
         this.registers = document.getElementById("registers");
         this.memory = document.getElementById("memory");
         this.flags = document.getElementById("flags");
         this.run = document.getElementById("run");
         this.stop = document.getElementById("stop");
         this.step = document.getElementById("step");
-        if (!this.interface ||
-            !this.registers ||
+        if (!this.registers ||
             !this.memory ||
             !this.flags ||
             !this.run ||
@@ -42,7 +40,6 @@ export class Interface {
 
     updateInterface() {
         this.cpu.debugReg();
-        this.cpu.debugFlags();
     }
 
     tick() {
@@ -52,15 +49,19 @@ export class Interface {
     }
 
     doRun() {
-
+        // can't work...
+        // while(!this.stopEvent) {
+        //     this.cpu.executeNext();
+        //     this.ppu.tick();
+        // }
     }
 
     doStop() {
-
+        this.updateInterface();
+        this.stopEvent = "stop";
     }
 
     doStep() {
-        console.log("step");
         this.tick();
         this.updateInterface();
     }
